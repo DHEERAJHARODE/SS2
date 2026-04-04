@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { db } from '../firebase'; // Path match
-import { getDocs, query, collection, where, addDoc, updateDoc, doc } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom'; // For redirect after success
+// ✅ NEW: Added 'increment' to the import list
+import { getDocs, query, collection, where, addDoc, updateDoc, doc, increment } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 import { Camera, ShieldCheck, Upload, User, FileText, MapPin, Phone, CreditCard } from 'lucide-react';
 
 const TenantPortal = () => {
@@ -18,7 +19,7 @@ const TenantPortal = () => {
   const [showCamera, setShowCamera] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // ✅ Full Form State (Matching index.html & TenantAgreement.jsx)
+  // Full Form State
   const [tenantData, setTenantData] = useState({
     name: "",
     fatherName: "",
@@ -39,17 +40,22 @@ const TenantPortal = () => {
     setFetching(true);
 
     try {
-        // ✅ Using 'accessKey' and toUpperCase()
+        const finalKey = key.trim().toUpperCase();
         const q = query(
             collection(db, "agreements"), 
-            where("accessKey", "==", key.toUpperCase())
+            where("accessKey", "==", finalKey)
         );
         
         const snap = await getDocs(q);
         if (!snap.empty) {
             const data = snap.docs[0].data();
-            if(data.status === 'filled') {
-                alert("⛔ This agreement is already signed and closed.");
+            
+            // ✅ NEW: Check if current signatures reached the max limit
+            const current = data.currentTenants || 0;
+            const max = data.maxTenants || 1;
+
+            if(current >= max) {
+                alert(`⛔ This agreement is already fully signed by all ${max} tenants.`);
                 setAgreement(null);
             } else {
                 setAgreement({ id: snap.docs[0].id, ...data });
@@ -70,15 +76,41 @@ const TenantPortal = () => {
     setTenantData({ ...tenantData, [e.target.name]: e.target.value });
   };
 
-  // 3. Handle File Uploads (Base64)
+  // Helper Function to Compress Uploaded Images to stay under 1MB limit
+  const compressImage = (file, callback) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const MAX_WIDTH = 800;
+            let scaleSize = 1;
+            
+            if (img.width > MAX_WIDTH) {
+                scaleSize = MAX_WIDTH / img.width;
+            }
+            
+            canvas.width = img.width * scaleSize;
+            canvas.height = img.height * scaleSize;
+
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            
+            const compressedBase64 = canvas.toDataURL("image/jpeg", 0.6);
+            callback(compressedBase64);
+        };
+    };
+  };
+
+  // 3. Handle File Uploads (With Compression)
   const handleFileUpload = (e, field) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setTenantData((prev) => ({ ...prev, [field]: reader.result }));
-      };
-      reader.readAsDataURL(file);
+      compressImage(file, (compressedBase64) => {
+        setTenantData((prev) => ({ ...prev, [field]: compressedBase64 }));
+      });
     }
   };
 
@@ -101,11 +133,11 @@ const TenantPortal = () => {
 
     const ctx = canvas.getContext("2d");
     ctx.drawImage(video, 0, 0, 320, 240);
-    const imageSrc = canvas.toDataURL("image/png");
+    
+    const imageSrc = canvas.toDataURL("image/jpeg", 0.7);
     
     setTenantData(prev => ({ ...prev, selfie: imageSrc }));
     
-    // Stop Stream
     const stream = video.srcObject;
     if (stream) stream.getTracks().forEach(track => track.stop());
     setShowCamera(false);
@@ -131,20 +163,21 @@ const TenantPortal = () => {
         filledAt: new Date().toISOString()
       });
 
-      // Step B: Update Agreement Status
+      // ✅ NEW: Increment tenant count and update status ONLY IF fully filled
+      const currentCount = (agreement.currentTenants || 0) + 1;
+      const maxAllowed = agreement.maxTenants || 1;
+
       await updateDoc(doc(db, "agreements", agreement.id), {
-        status: "filled",
-        tenantName: tenantData.name,
-        tenantId: tenantRef.id
+        currentTenants: increment(1),
+        status: currentCount >= maxAllowed ? "filled" : "pending"
       });
 
       alert("✅ Agreement Signed Successfully!");
-      // Redirect to Contract View
       navigate("/view-contract", { state: { agreement: agreement, tenant: tenantData } });
 
     } catch (err) {
       console.error(err);
-      alert("Error submitting form. Please try again.");
+      alert("Error submitting form. The images might still be too large.");
     } finally {
       setSubmitting(false);
     }
@@ -159,13 +192,13 @@ const TenantPortal = () => {
           <div className="text-center py-10">
             <ShieldCheck size={80} className="mx-auto text-blue-600 mb-6" />
             <h1 className="text-3xl font-bold mb-2 text-slate-800">Secure Rental Agreement</h1>
-            <p className="text-slate-500 mb-8">Enter the 6-character access key provided by the owner.</p>
+            <p className="text-slate-500 mb-8">Enter the 8-character access key provided by the owner.</p>
             
             <div className="max-w-xs mx-auto space-y-4">
                 <input 
                   className="w-full border-2 border-slate-200 p-4 rounded-2xl text-center text-3xl font-mono uppercase tracking-widest focus:border-blue-500 outline-none transition-colors" 
-                  maxLength={6} 
-                  placeholder="XXXXXX" 
+                  maxLength={8} 
+                  placeholder="XXXXXXXX" 
                   onChange={e => setKey(e.target.value)} 
                 />
                 <button 
@@ -187,12 +220,19 @@ const TenantPortal = () => {
                 <ShieldCheck size={20}/> Property: {agreement.propertyName}
               </h2>
               <p className="text-blue-700 font-medium">Monthly Rent: ₹{agreement.rentAmount}</p>
+              <p className="text-blue-700 font-medium text-sm mt-1">
+                <strong>Signatures Required:</strong> {(agreement.currentTenants || 0)} / {agreement.maxTenants || 1} Signed
+              </p>
               
               <div className="mt-4 bg-white p-4 rounded-xl text-sm text-slate-600 max-h-40 overflow-y-auto">
                 <p className="font-bold mb-2">Terms & Conditions:</p>
-                <ul className="list-disc ml-4 space-y-1">
-                    {agreement.terms && agreement.terms.map((t, i) => <li key={i}>{t}</li>)}
-                </ul>
+                {agreement.terms && Array.isArray(agreement.terms) ? (
+                    <ul className="list-disc ml-4 space-y-1">
+                        {agreement.terms.map((t, i) => <li key={i}>{t}</li>)}
+                    </ul>
+                ) : (
+                    <p className="whitespace-pre-wrap leading-relaxed">{agreement.terms || 'No terms provided.'}</p>
+                )}
               </div>
             </div>
 
