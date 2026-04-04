@@ -1,56 +1,39 @@
 import React, { useState, useRef } from 'react';
-import { db } from '../firebase'; // Path match
-// ✅ NEW: Added 'increment' to the import list
+import { db } from '../firebase'; 
 import { getDocs, query, collection, where, addDoc, updateDoc, doc, increment } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
-import { Camera, ShieldCheck, Upload, User, FileText, MapPin, Phone, CreditCard } from 'lucide-react';
+import { Camera, ShieldCheck, User, MapPin, Phone, CreditCard, FileText, Image as ImageIcon } from 'lucide-react';
+import './TenantPortal.css'; // ✅ Imported CSS
 
 const TenantPortal = () => {
   const navigate = useNavigate();
   
-  // State for Manual Key Entry
   const [key, setKey] = useState('');
   const [agreement, setAgreement] = useState(null);
   const [fetching, setFetching] = useState(false);
 
-  // Camera Refs & State
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [showCamera, setShowCamera] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // Full Form State
   const [tenantData, setTenantData] = useState({
-    name: "",
-    fatherName: "",
-    address: "",
-    mobile: "",
-    aadhaar: "",
-    aadhaarFront: "", 
-    aadhaarBack: "",  
-    pan: "",
-    panCard: "",      
-    signature: "",    
-    selfie: ""        
+    name: "", fatherName: "", address: "", mobile: "",
+    aadhaar: "", aadhaarFront: "", aadhaarBack: "",  
+    pan: "", panCard: "", signature: "", selfie: ""        
   });
 
-  // 1. Fetch Agreement by Key
   const fetchByKey = async () => {
     if(!key) return alert("Please enter a key!");
     setFetching(true);
 
     try {
         const finalKey = key.trim().toUpperCase();
-        const q = query(
-            collection(db, "agreements"), 
-            where("accessKey", "==", finalKey)
-        );
-        
+        const q = query(collection(db, "agreements"), where("accessKey", "==", finalKey));
         const snap = await getDocs(q);
+        
         if (!snap.empty) {
             const data = snap.docs[0].data();
-            
-            // ✅ NEW: Check if current signatures reached the max limit
             const current = data.currentTenants || 0;
             const max = data.maxTenants || 1;
 
@@ -71,12 +54,10 @@ const TenantPortal = () => {
     }
   };
 
-  // 2. Handle Text Inputs
   const handleInput = (e) => {
     setTenantData({ ...tenantData, [e.target.name]: e.target.value });
   };
 
-  // Helper Function to Compress Uploaded Images to stay under 1MB limit
   const compressImage = (file, callback) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -87,34 +68,22 @@ const TenantPortal = () => {
             const canvas = document.createElement("canvas");
             const MAX_WIDTH = 800;
             let scaleSize = 1;
-            
-            if (img.width > MAX_WIDTH) {
-                scaleSize = MAX_WIDTH / img.width;
-            }
+            if (img.width > MAX_WIDTH) scaleSize = MAX_WIDTH / img.width;
             
             canvas.width = img.width * scaleSize;
             canvas.height = img.height * scaleSize;
-
             const ctx = canvas.getContext("2d");
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            
-            const compressedBase64 = canvas.toDataURL("image/jpeg", 0.6);
-            callback(compressedBase64);
+            callback(canvas.toDataURL("image/jpeg", 0.6));
         };
     };
   };
 
-  // 3. Handle File Uploads (With Compression)
   const handleFileUpload = (e, field) => {
     const file = e.target.files[0];
-    if (file) {
-      compressImage(file, (compressedBase64) => {
-        setTenantData((prev) => ({ ...prev, [field]: compressedBase64 }));
-      });
-    }
+    if (file) compressImage(file, (base64) => setTenantData((prev) => ({ ...prev, [field]: base64 })));
   };
 
-  // 4. Camera Logic
   const startCamera = async () => {
     setShowCamera(true);
     try {
@@ -133,37 +102,25 @@ const TenantPortal = () => {
 
     const ctx = canvas.getContext("2d");
     ctx.drawImage(video, 0, 0, 320, 240);
-    
-    const imageSrc = canvas.toDataURL("image/jpeg", 0.7);
-    
-    setTenantData(prev => ({ ...prev, selfie: imageSrc }));
+    setTenantData(prev => ({ ...prev, selfie: canvas.toDataURL("image/jpeg", 0.7) }));
     
     const stream = video.srcObject;
     if (stream) stream.getTracks().forEach(track => track.stop());
     setShowCamera(false);
   };
 
-  // 5. Submit Full Form
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Basic Validation
     if (!tenantData.aadhaarFront || !tenantData.aadhaarBack || !tenantData.panCard || !tenantData.signature || !tenantData.selfie) {
-      alert("⚠️ Please upload all required photos and take a selfie.");
-      return;
+      return alert("⚠️ Please upload all required photos and take a selfie.");
     }
-
     setSubmitting(true);
 
     try {
-      // Step A: Save Tenant Data
       const tenantRef = await addDoc(collection(db, "tenants"), {
-        ...tenantData,
-        agreementId: agreement.id,
-        filledAt: new Date().toISOString()
+        ...tenantData, agreementId: agreement.id, filledAt: new Date().toISOString()
       });
 
-      // ✅ NEW: Increment tenant count and update status ONLY IF fully filled
       const currentCount = (agreement.currentTenants || 0) + 1;
       const maxAllowed = agreement.maxTenants || 1;
 
@@ -174,29 +131,28 @@ const TenantPortal = () => {
 
       alert("✅ Agreement Signed Successfully!");
       navigate("/view-contract", { state: { agreement: agreement, tenant: tenantData } });
-
     } catch (err) {
       console.error(err);
-      alert("Error submitting form. The images might still be too large.");
+      alert("Error submitting form. Please try again.");
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6 flex items-center justify-center">
-      <div className="max-w-3xl w-full bg-white rounded-3xl shadow-2xl p-8 border border-slate-200">
+    <div className="portal-wrapper">
+      <div className="portal-card">
         
         {/* STATE 1: ENTER KEY */}
         {!agreement ? (
-          <div className="text-center py-10">
-            <ShieldCheck size={80} className="mx-auto text-blue-600 mb-6" />
-            <h1 className="text-3xl font-bold mb-2 text-slate-800">Secure Rental Agreement</h1>
-            <p className="text-slate-500 mb-8">Enter the 8-character access key provided by the owner.</p>
+          <div>
+            <ShieldCheck size={70} className="portal-icon" />
+            <h1 className="portal-title">Secure Tenant Portal</h1>
+            <p className="portal-subtitle">Enter the 8-character access key provided by your owner.</p>
             
-            <div className="max-w-xs mx-auto space-y-4">
+            <div className="key-input-container">
                 <input 
-                  className="w-full border-2 border-slate-200 p-4 rounded-2xl text-center text-3xl font-mono uppercase tracking-widest focus:border-blue-500 outline-none transition-colors" 
+                  className="key-input" 
                   maxLength={8} 
                   placeholder="XXXXXXXX" 
                   onChange={e => setKey(e.target.value)} 
@@ -204,143 +160,138 @@ const TenantPortal = () => {
                 <button 
                   onClick={fetchByKey} 
                   disabled={fetching}
-                  className="w-full bg-blue-600 text-white p-4 rounded-2xl font-bold hover:bg-blue-700 transition-all disabled:opacity-70"
+                  className="verify-btn"
                 >
-                  {fetching ? "Verifying..." : "Verify & Start"}
+                  {fetching ? "Verifying..." : "Access Agreement"}
                 </button>
             </div>
           </div>
         ) : (
           /* STATE 2: FILL FORM (FULL) */
-          <div className="space-y-8">
+          <div className="text-left">
             
             {/* Agreement Info Header */}
-            <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100">
-              <h2 className="text-xl font-bold text-blue-900 mb-1 flex items-center gap-2">
-                <ShieldCheck size={20}/> Property: {agreement.propertyName}
-              </h2>
-              <p className="text-blue-700 font-medium">Monthly Rent: ₹{agreement.rentAmount}</p>
-              <p className="text-blue-700 font-medium text-sm mt-1">
-                <strong>Signatures Required:</strong> {(agreement.currentTenants || 0)} / {agreement.maxTenants || 1} Signed
-              </p>
+            <div className="agreement-info">
+              <h2><MapPin size={22}/> {agreement.propertyName}</h2>
+              <div className="badge-row">
+                 <span className="info-badge">Rent: ₹{agreement.rentAmount}/month</span>
+                 <span className="info-badge">Signatures Required: {(agreement.currentTenants || 0)} / {agreement.maxTenants || 1}</span>
+              </div>
               
-              <div className="mt-4 bg-white p-4 rounded-xl text-sm text-slate-600 max-h-40 overflow-y-auto">
-                <p className="font-bold mb-2">Terms & Conditions:</p>
+              <div className="terms-section">
+                <p className="terms-title"><FileText size={16} className="inline mr-1"/> Terms & Conditions</p>
                 {agreement.terms && Array.isArray(agreement.terms) ? (
-                    <ul className="list-disc ml-4 space-y-1">
-                        {agreement.terms.map((t, i) => <li key={i}>{t}</li>)}
-                    </ul>
+                    <ul>{agreement.terms.map((t, i) => <li key={i}>{t}</li>)}</ul>
                 ) : (
-                    <p className="whitespace-pre-wrap leading-relaxed">{agreement.terms || 'No terms provided.'}</p>
+                    <p style={{margin:0, fontSize:'14px', color:'#475569'}}>{agreement.terms || 'No terms provided.'}</p>
                 )}
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-                <h3 className="text-xl font-bold text-slate-800 border-b pb-2">Tenant Details</h3>
-
-                {/* Name & Father Name */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-1">Full Name *</label>
-                        <div className="flex items-center border rounded-xl px-3 py-3 bg-slate-50">
-                            <User size={18} className="text-slate-400 mr-2"/>
-                            <input name="name" className="bg-transparent w-full outline-none" placeholder="As per Aadhaar" required onChange={handleInput} />
+            <form onSubmit={handleSubmit}>
+                
+                {/* 1. Personal Details */}
+                <h3 className="form-section-title"><User size={20} className="text-blue-600"/> Personal Details</h3>
+                <div className="form-grid">
+                    <div className="input-wrapper">
+                        <label>Full Name (As per Aadhaar) *</label>
+                        <div className="tenant-input-box">
+                            <User size={18} className="input-icon"/>
+                            <input name="name" className="tenant-input" placeholder="Enter full name" required onChange={handleInput} />
                         </div>
                     </div>
-                    <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-1">Father's Name *</label>
-                        <div className="flex items-center border rounded-xl px-3 py-3 bg-slate-50">
-                            <User size={18} className="text-slate-400 mr-2"/>
-                            <input name="fatherName" className="bg-transparent w-full outline-none" required onChange={handleInput} />
+                    <div className="input-wrapper">
+                        <label>Father/Husband's Name *</label>
+                        <div className="tenant-input-box">
+                            <User size={18} className="input-icon"/>
+                            <input name="fatherName" className="tenant-input" placeholder="Enter name" required onChange={handleInput} />
+                        </div>
+                    </div>
+                    <div className="input-wrapper col-span-2">
+                        <label>Permanent Address *</label>
+                        <div className="tenant-input-box textarea-box">
+                            <MapPin size={18} className="input-icon"/>
+                            <textarea
+                              name="address"
+                              rows="2"
+                              className="tenant-input"
+                              placeholder="Complete address with pincode"
+                              required
+                              onChange={handleInput}
+                            />
+                        </div>
+                    </div>
+                    <div className="input-wrapper">
+                        <label>Mobile Number *</label>
+                        <div className="tenant-input-box">
+                            <Phone size={18} className="input-icon"/>
+                            <input name="mobile" type="tel" maxLength={10} className="tenant-input" placeholder="10-digit number" required onChange={handleInput} />
                         </div>
                     </div>
                 </div>
 
-                {/* Address & Mobile */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="md:col-span-2">
-                        <label className="block text-sm font-semibold text-slate-700 mb-1">Permanent Address *</label>
-                        <div className="flex items-start border rounded-xl px-3 py-3 bg-slate-50">
-                            <MapPin size={18} className="text-slate-400 mr-2 mt-1"/>
-                            <textarea name="address" rows="2" className="bg-transparent w-full outline-none resize-none" required onChange={handleInput}></textarea>
-                        </div>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-1">Mobile Number *</label>
-                        <div className="flex items-center border rounded-xl px-3 py-3 bg-slate-50">
-                            <Phone size={18} className="text-slate-400 mr-2"/>
-                            <input name="mobile" type="tel" maxLength={10} className="bg-transparent w-full outline-none" required onChange={handleInput} />
-                        </div>
-                    </div>
-                </div>
-
-                {/* ID Proofs */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-                    {/* Aadhaar */}
-                    <div className="space-y-3">
-                        <label className="block text-sm font-semibold text-slate-700">Aadhaar Details *</label>
-                        <input name="aadhaar" placeholder="Aadhaar Number (12 Digits)" maxLength={12} className="w-full border p-3 rounded-xl" required onChange={handleInput} />
+                {/* 2. Documents */}
+                <h3 className="form-section-title"><CreditCard size={20} className="text-blue-600"/> Document Proofs</h3>
+                <div className="form-grid">
+                    <div className="upload-card">
+                        <label style={{fontWeight:'600', color:'#475569', fontSize:'14px', display:'block', marginBottom:'8px'}}>Aadhaar Number *</label>
+                        <input name="aadhaar" placeholder="12 Digit Aadhaar" maxLength={12} className="tenant-input" style={{border:'1px solid #cbd5e1', marginBottom:'15px'}} required onChange={handleInput} />
                         
-                        <div className="grid grid-cols-2 gap-2">
-                            <div className="border border-dashed border-slate-300 p-4 rounded-xl text-center cursor-pointer hover:bg-slate-50">
-                                <span className="text-xs font-bold text-slate-500">Front Photo</span>
-                                <input type="file" accept="image/*" className="w-full text-xs mt-2" onChange={(e)=>handleFileUpload(e, 'aadhaarFront')} required />
-                            </div>
-                            <div className="border border-dashed border-slate-300 p-4 rounded-xl text-center cursor-pointer hover:bg-slate-50">
-                                <span className="text-xs font-bold text-slate-500">Back Photo</span>
-                                <input type="file" accept="image/*" className="w-full text-xs mt-2" onChange={(e)=>handleFileUpload(e, 'aadhaarBack')} required />
-                            </div>
-                        </div>
+                        <label style={{fontSize:'12px', fontWeight:'700', color:'#64748b'}}>Aadhaar Front Photo *</label>
+                        <input type="file" accept="image/*" className="upload-input-styled" onChange={(e)=>handleFileUpload(e, 'aadhaarFront')} required />
+                        
+                        <label style={{fontSize:'12px', fontWeight:'700', color:'#64748b', marginTop:'15px', display:'block'}}>Aadhaar Back Photo *</label>
+                        <input type="file" accept="image/*" className="upload-input-styled" onChange={(e)=>handleFileUpload(e, 'aadhaarBack')} required />
                     </div>
 
-                    {/* PAN */}
-                    <div className="space-y-3">
-                        <label className="block text-sm font-semibold text-slate-700">PAN Details *</label>
-                        <div className="flex items-center border rounded-xl px-3 py-3 bg-slate-50">
-                            <CreditCard size={18} className="text-slate-400 mr-2"/>
-                            <input name="pan" placeholder="PAN Number" maxLength={10} className="bg-transparent w-full outline-none uppercase" required onChange={handleInput} />
-                        </div>
-                        <div className="border border-dashed border-slate-300 p-4 rounded-xl text-center hover:bg-slate-50">
-                             <span className="text-xs font-bold text-slate-500">Upload PAN Card Photo</span>
-                             <input type="file" accept="image/*" className="w-full text-xs mt-2" onChange={(e)=>handleFileUpload(e, 'panCard')} required />
-                        </div>
+                    <div className="upload-card">
+                        <label style={{fontWeight:'600', color:'#475569', fontSize:'14px', display:'block', marginBottom:'8px'}}>PAN Number *</label>
+                        <input name="pan" placeholder="ABCDE1234F" maxLength={10} className="tenant-input" style={{border:'1px solid #cbd5e1', marginBottom:'15px', textTransform:'uppercase'}} required onChange={handleInput} />
+                        
+                        <label style={{fontSize:'12px', fontWeight:'700', color:'#64748b'}}>PAN Card Photo *</label>
+                        <input type="file" accept="image/*" className="upload-input-styled" onChange={(e)=>handleFileUpload(e, 'panCard')} required />
                     </div>
                 </div>
 
-                {/* Signature & Selfie */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-                    <div className="border p-4 rounded-xl bg-slate-50">
-                        <label className="block text-sm font-bold mb-2">Signature Upload *</label>
-                        <input type="file" accept="image/*" onChange={(e)=>handleFileUpload(e, 'signature')} required />
-                        {tenantData.signature && <img src={tenantData.signature} className="h-16 mt-2 border rounded" alt="Sign"/>}
+                {/* 3. Verification */}
+                <h3 className="form-section-title"><ImageIcon size={20} className="text-blue-600"/> Identity Verification</h3>
+                <div className="form-grid">
+                    
+                    {/* Signature */}
+                    <div className="portal-camera-box" style={{justifyContent: 'center'}}>
+                        <label style={{fontWeight:'700', color:'#334155'}}>Upload Signature (Photo) *</label>
+                        <p style={{fontSize:'12px', color:'#64748b', margin:'0 0 10px 0'}}>Sign on a blank paper and take a photo</p>
+                        <input type="file" accept="image/*" className="upload-input-styled" onChange={(e)=>handleFileUpload(e, 'signature')} required />
+                        {tenantData.signature && <img src={tenantData.signature} style={{height:'60px', marginTop:'15px', border:'1px dashed #cbd5e1', borderRadius:'8px', padding:'5px'}} alt="Signature"/>}
                     </div>
 
-                    <div className="border p-4 rounded-xl bg-slate-50 text-center">
-                        <label className="block text-sm font-bold mb-2">Live Selfie *</label>
+                    {/* Selfie */}
+                    <div className="portal-camera-box">
+                        <label style={{fontWeight:'700', color:'#334155'}}>Live Selfie Verification *</label>
                         {showCamera ? (
-                            <div className="relative">
-                                <video ref={videoRef} autoPlay playsInline className="w-full rounded-lg mb-2 bg-black h-40 object-cover"></video>
-                                <button type="button" onClick={captureImage} className="bg-red-500 text-white px-4 py-1 rounded-full text-sm">Capture</button>
+                            <div className="camera-preview-container">
+                                <video ref={videoRef} autoPlay playsInline className="camera-preview"></video>
+                                <button type="button" onClick={captureImage} className="capture-btn">📸 Capture</button>
                             </div>
                         ) : (
                             !tenantData.selfie ? (
-                                <button type="button" onClick={startCamera} className="bg-slate-800 text-white px-4 py-2 rounded-xl text-sm flex items-center gap-2 mx-auto">
-                                    <Camera size={16}/> Start Camera
+                                <button type="button" onClick={startCamera} className="start-camera-btn">
+                                    <Camera size={18}/> Start Camera
                                 </button>
                             ) : (
-                                <div className="relative">
-                                    <img src={tenantData.selfie} className="w-full h-40 object-cover rounded-lg" alt="Selfie" />
-                                    <button type="button" onClick={()=>setTenantData({...tenantData, selfie: ''})} className="absolute top-1 right-1 bg-red-500 text-white text-xs px-2 py-1 rounded">Retake</button>
+                                <div className="camera-preview-container">
+                                    <img src={tenantData.selfie} className="camera-preview" alt="Selfie" />
+                                    <button type="button" onClick={()=>setTenantData({...tenantData, selfie: ''})} className="retake-btn">Retake</button>
                                 </div>
                             )
                         )}
                         <canvas ref={canvasRef} className="hidden" width="320" height="240"></canvas>
                     </div>
+
                 </div>
 
-                <button type="submit" disabled={submitting} className="w-full bg-green-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-green-700 transition-all shadow-lg hover:shadow-green-200">
-                    {submitting ? "Processing Agreement..." : "Sign & Generate Agreement"}
+                <button type="submit" disabled={submitting} className="submit-agreement-btn">
+                    {submitting ? "⏳ Processing & Encrypting..." : "Sign & Generate Legal Agreement"}
                 </button>
 
             </form>

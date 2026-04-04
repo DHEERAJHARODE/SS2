@@ -12,19 +12,17 @@ import "./Login.css";
 
 export default function Login() {
   const navigate = useNavigate();
-  const location = useLocation(); // Get current URL
+  const location = useLocation(); 
   
-  // Determine mode based on URL
   const [isSignUp, setIsSignUp] = useState(location.pathname === '/signup');
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ 
-    fullName: '', // Added for Signup
+    fullName: '', 
     email: '', 
     password: '' 
   });
   const [error, setError] = useState('');
 
-  // Update state if URL changes (e.g. user clicks browser back button)
   useEffect(() => {
     setIsSignUp(location.pathname === '/signup');
     setError('');
@@ -42,15 +40,13 @@ export default function Login() {
 
     try {
       if (isSignUp) {
-        // Sign Up Logic
         const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-        // Optional: Update profile with Full Name here if needed
         console.log("Registered:", userCredential.user);
       } else {
-        // Login Logic
         await signInWithEmailAndPassword(auth, formData.email, formData.password);
       }
-      navigate("/dashboard");
+      // ✅ FIX: Dashboard की जगह Home (/) पर रीडायरेक्ट किया
+      navigate("/");
     } catch (err) {
       setError(err.message.replace('Firebase: ', ''));
     } finally {
@@ -61,7 +57,8 @@ export default function Login() {
   const handleGoogleLogin = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
-      navigate("/dashboard");
+      // ✅ FIX: Google Login के बाद भी Home (/) पर रीडायरेक्ट किया
+      navigate("/");
     } catch (error) {
       setError("Google Login Failed");
     }
@@ -80,7 +77,6 @@ export default function Login() {
     }
   };
 
-  // Toggle Function: Changes URL instead of just state
   const toggleMode = () => {
     if (isSignUp) navigate('/login');
     else navigate('/signup');
@@ -110,7 +106,6 @@ export default function Login() {
         <div className="login-body">
           <form onSubmit={handleAuth} className="auth-form">
             
-            {/* Full Name Input (Only for Signup) */}
             {isSignUp && (
               <div className="input-group slide-in">
                 <User size={18} className="input-icon" />

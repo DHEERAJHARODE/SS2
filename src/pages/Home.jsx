@@ -52,7 +52,7 @@ export default function Home() {
           </p>
           
           <div className="hero-actions">
-            <a href="/login" className="btn-main">
+            <a href="/dashboard" className="btn-main">
               Get Started <ArrowRight size={20} />
             </a>
             <a href="/dashboard" className="btn-glass">Tenant Status</a>
