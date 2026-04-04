@@ -17,12 +17,16 @@ export default function Home() {
   useEffect(() => {
     if (!user) return;
 
-    const q = query(collection(db, "agreements"), where("ownerEmail", "==", user.email));
+    // ✅ FIX 1: ownerEmail की जगह ownerUid कर दिया गया है
+    const q = query(collection(db, "agreements"), where("ownerUid", "==", user.uid));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const list = snapshot.docs.map(doc => doc.data());
       const total = list.length;
-      const signed = list.filter(a => a.status === "filled").length;
+      
+      // ✅ FIX 2: Dashboard वाला मल्टी-टेनेंट लॉजिक यहाँ भी लगा दिया गया है
+      const signed = list.filter(a => (a.currentTenants || 0) >= (a.maxTenants || 1)).length;
       const pending = total - signed;
+      
       setStats({ total, signed, pending });
     });
 
@@ -39,7 +43,7 @@ export default function Home() {
 
       <main className="hero-container">
         
-        {/* --- HERO SECTION (UNCHANGED) --- */}
+        {/* --- HERO SECTION --- */}
         <header className="hero-content">
           <div className="premium-badge">Trusted by 10,000+ Owners</div>
           <h1 className="hero-title">
@@ -52,14 +56,14 @@ export default function Home() {
           </p>
           
           <div className="hero-actions">
-            <a href="/dashboard" className="btn-main">
+            <a href="/login" className="btn-main">
               Get Started <ArrowRight size={20} />
             </a>
             <a href="/dashboard" className="btn-glass">Tenant Status</a>
           </div>
         </header>
 
-        {/* --- NEW: DASHBOARD PREVIEW STRIP (ONLY FOR LOGGED IN USERS) --- */}
+        {/* --- DASHBOARD PREVIEW STRIP (ONLY FOR LOGGED IN USERS) --- */}
         {user && (
           <div className="dashboard-strip">
             <div className="strip-header">
@@ -98,7 +102,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* --- FEATURES SECTION (UNCHANGED) --- */}
+        {/* --- FEATURES SECTION --- */}
         <section className="features-grid">
           <div className="feature-card">
             <ShieldCheck className="f-icon" size={32} />

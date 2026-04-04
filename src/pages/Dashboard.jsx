@@ -10,8 +10,8 @@ import {
   Copy, 
   CheckCircle, 
   Clock,
-  Menu, // Hamburger Icon
-  X     // Close Icon
+  Menu, 
+  X     
 } from "lucide-react";
 import "./Dashboard.css";
 
@@ -26,6 +26,7 @@ export default function Dashboard() {
   const [formData, setFormData] = useState({
     propertyName: "",
     rentAmount: "",
+    maxTenants: 1, 
     terms: "1. Rent must be paid by the 5th of every month.\n2. Security deposit is refundable.\n3. Keep the premises clean.", 
   });
 
@@ -49,6 +50,8 @@ export default function Dashboard() {
       const accessKey = Math.random().toString(36).substring(2, 10).toUpperCase();
       await addDoc(collection(db, "agreements"), {
         ...formData,
+        maxTenants: parseInt(formData.maxTenants) || 1,
+        currentTenants: 0, 
         accessKey,
         ownerUid: user.uid,
         status: "pending",
@@ -57,16 +60,23 @@ export default function Dashboard() {
       });
       alert("Agreement Created! Share the Access Key.");
       setActiveTab("agreements");
-      setFormData({ propertyName: "", rentAmount: "", terms: formData.terms });
+      setFormData({ propertyName: "", rentAmount: "", maxTenants: 1, terms: formData.terms });
     } catch (err) {
       console.error(err);
       alert("Error creating agreement");
     }
   };
 
+  // ✅ 1. Existing function for Full Link
   const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(`${window.location.origin}/tenant-login`);
-    alert("Login Link Copied! Share key: " + text);
+    navigator.clipboard.writeText(`${window.location.origin}/portal`);
+    alert("Tenant Portal Link Copied! Share this key: " + text);
+  };
+
+  // ✅ 2. NEW function to copy ONLY the Access Key
+  const copyKeyOnly = (keyText) => {
+    navigator.clipboard.writeText(keyText);
+    alert(`Access Key Copied: ${keyText}`);
   };
 
   const handleNavClick = (tab) => {
@@ -77,12 +87,12 @@ export default function Dashboard() {
   return (
     <div className="dashboard-wrapper">
       
-      {/* Mobile Header Bar (Only visible on Mobile) */}
+      {/* Mobile Header Bar */}
       <div className="mobile-header">
         <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
           <Menu size={24} />
         </button>
-        <span className="mobile-brand">Stay Safe.</span>
+        <span className="mobile-brand">SafeStay.</span>
         <img src={avatarUrl} alt="User" className="mobile-avatar" />
       </div>
 
@@ -93,12 +103,10 @@ export default function Dashboard() {
 
       {/* SIDEBAR */}
       <aside className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
-        {/* Sidebar Header with Close Button */}
         <div className="sidebar-header">
           <div className="brand">
-            <h2>Stay Safe<span className="dot">.</span></h2>
+            <h2>SafeStay<span className="dot">.</span></h2>
           </div>
-          {/* Close Button Inside Sidebar (Right aligned) */}
           <button className="close-sidebar-btn" onClick={() => setIsSidebarOpen(false)}>
             <X size={24} />
           </button>
@@ -149,7 +157,6 @@ export default function Dashboard() {
           <div className="date-badge">{new Date().toDateString()}</div>
         </header>
 
-        {/* Mobile Page Title (Below Header) */}
         <div className="mobile-page-title">
           <h2>
              {activeTab === "overview" && "Overview"}
@@ -174,7 +181,7 @@ export default function Dashboard() {
                 <div className="icon-box green"><CheckCircle size={24}/></div>
                 <div>
                   <h3>{agreements.filter(a => a.status === 'filled').length}</h3>
-                  <p>Signed / Active</p>
+                  <p>Fully Signed</p>
                 </div>
               </div>
               <div className="stat-card">
@@ -208,6 +215,16 @@ export default function Dashboard() {
                     placeholder="e.g. 12000" 
                     value={formData.rentAmount}
                     onChange={(e) => setFormData({...formData, rentAmount: e.target.value})}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Number of Tenants (How many people will sign?)</label>
+                  <input 
+                    type="number" 
+                    min="1"
+                    placeholder="e.g. 2" 
+                    value={formData.maxTenants}
+                    onChange={(e) => setFormData({...formData, maxTenants: e.target.value})}
                   />
                 </div>
                 <div className="form-group">
@@ -250,13 +267,40 @@ export default function Dashboard() {
                           <td>{new Date(ag.createdAt).toLocaleDateString()}</td>
                           <td>
                             <span className={`badge ${ag.status === 'filled' ? 'success' : 'pending'}`}>
-                              {ag.status === 'filled' ? 'Signed' : 'Pending'}
+                              {ag.currentTenants || 0} Signed
                             </span>
                           </td>
-                          <td className="key-text">{ag.accessKey}</td>
+
+                          {/* ✅ 3. NEW: Access Key Box with embedded Copy Button */}
+                          <td>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <span className="key-text" style={{ margin: 0 }}>{ag.accessKey}</span>
+                              <button 
+                                onClick={() => copyKeyOnly(ag.accessKey)}
+                                title="Copy Access Key"
+                                style={{
+                                  background: '#e0e7ff',
+                                  color: '#4338ca',
+                                  border: 'none',
+                                  padding: '6px',
+                                  borderRadius: '6px',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  transition: '0.2s ease'
+                                }}
+                                onMouseOver={(e) => e.currentTarget.style.background = '#c7d2fe'}
+                                onMouseOut={(e) => e.currentTarget.style.background = '#e0e7ff'}
+                              >
+                                <Copy size={14} />
+                              </button>
+                            </div>
+                          </td>
+
                           <td>
                             <button onClick={() => copyToClipboard(ag.accessKey)} className="action-btn">
-                              <Copy size={16} /> <span className="btn-text">Link</span>
+                              <Copy size={16} /> <span className="btn-text">Portal Link</span>
                             </button>
                           </td>
                         </tr>
