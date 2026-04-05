@@ -199,3 +199,34 @@
     page-break-after: always;
   }
 }
+
+/* =========================================
+   9. MOBILE RESPONSIVENESS (NEWLY ADDED)
+   ========================================= */
+@media (max-width: 768px) {
+  .contract-container {
+    padding: 10px; /* मोबाइल पर बाहर की पैडिंग कम की */
+  }
+  .stamp-paper {
+    width: 100%; /* स्क्रीन के हिसाब से सिकुड़ जाएगा */
+    min-height: 141.4vw; /* A4 पेज का रेश्यो मेंटेन रखेगा */
+  }
+  .content-overlay {
+    padding-left: 8%;
+    padding-right: 8%;
+  }
+  .label {
+    width: 100px; /* मोबाइल पर जगह बचाने के लिए चौड़ाई कम की */
+    font-size: 12px;
+  }
+  .value {
+    font-size: 12px;
+  }
+  .contract-title {
+    font-size: 16px;
+  }
+  .download-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
