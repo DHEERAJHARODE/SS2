@@ -4,6 +4,9 @@ import Navbar from '../components/Navbar';
 import './Home.css';
 import Footer from '../components/Footer';
 
+// ✅ NEW: Import Link from react-router-dom
+import { Link } from 'react-router-dom';
+
 // Firebase Imports
 import { db } from "../firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
@@ -13,17 +16,15 @@ export default function Home() {
   const { user } = useAuth();
   const [stats, setStats] = useState({ total: 0, signed: 0, pending: 0 });
 
-  // Fetch Stats Logic (Sirf tab chalega jab user login ho)
+  // Fetch Stats Logic
   useEffect(() => {
     if (!user) return;
 
-    // ✅ FIX 1: ownerEmail की जगह ownerUid कर दिया गया है
     const q = query(collection(db, "agreements"), where("ownerUid", "==", user.uid));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const list = snapshot.docs.map(doc => doc.data());
       const total = list.length;
       
-      // ✅ FIX 2: Dashboard वाला मल्टी-टेनेंट लॉजिक यहाँ भी लगा दिया गया है
       const signed = list.filter(a => (a.currentTenants || 0) >= (a.maxTenants || 1)).length;
       const pending = total - signed;
       
@@ -56,10 +57,14 @@ export default function Home() {
           </p>
           
           <div className="hero-actions">
-            <a href="/login" className="btn-main">
-              Get Started <ArrowRight size={20} />
-            </a>
-            <a href="/dashboard" className="btn-glass">Tenant Status</a>
+            {/* ✅ FIX: Used <Link> and dynamic routing based on user state */}
+            <Link to={user ? "/dashboard" : "/login"} className="btn-main">
+              {user ? "Go to Dashboard" : "Get Started"} <ArrowRight size={20} />
+            </Link>
+            
+            <Link to={user ? "/dashboard" : "/portal"} className="btn-glass">
+              {user ? "Tenant Status" : "Tenant Portal"}
+            </Link>
           </div>
         </header>
 
@@ -68,7 +73,8 @@ export default function Home() {
           <div className="dashboard-strip">
             <div className="strip-header">
               <span className="user-welcome">👋 Welcome back, {user.displayName || "Owner"}</span>
-              <a href="/dashboard" className="goto-dash-link">Go to Full Dashboard <ArrowRight size={16} /></a>
+              {/* ✅ FIX: Used <Link> instead of <a> */}
+              <Link to="/dashboard" className="goto-dash-link">Go to Full Dashboard <ArrowRight size={16} /></Link>
             </div>
             
             <div className="strip-grid">
