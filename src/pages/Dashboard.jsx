@@ -77,14 +77,13 @@ export default function Dashboard() {
 
   // ✅ SMART SHARE LOGIC (Auto-Detects Mobile vs PC)
   const handleShare = async (accessKey, propertyName) => {
-    const directLink = `${window.location.origin}/share/${accessKey}`;
+    // Generate Direct Fill Agreement Link
+    const directLink = `${window.location.origin}/fill-agreement/${accessKey}`;
     const shareText = `Hello!\nPlease complete your tenant verification & agreement form for ${propertyName}.\n\nClick the link below to fill it out directly:\n${directLink}`;
 
-    // Regex to detect if user is on a mobile device
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
     if (isMobile && navigator.share) {
-      // If Mobile: Open Native Share Menu (WhatsApp, etc.)
       try {
         await navigator.share({
           title: "Tenant Agreement Form",
@@ -94,7 +93,6 @@ export default function Dashboard() {
         console.error("Error sharing:", err);
       }
     } else {
-      // If Desktop/PC: Automatically copy to clipboard instead of opening a popup
       navigator.clipboard.writeText(shareText);
       alert("Link & Message Copied to Clipboard! 🔗\n\nYou can now paste and send it to your tenant via WhatsApp Web or Email.");
     }

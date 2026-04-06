@@ -167,7 +167,16 @@ export default function TenantAgreement() {
           <p><strong>Rent:</strong> ₹{agreementData.rentAmount}</p>
           <div className="terms-box">
              <h4>Terms:</h4>
-             <ul>{agreementData.terms?.map((t,i)=><li key={i}>{t}</li>)}</ul>
+             <ul>{typeof agreementData.terms === 'string' 
+  ? agreementData.terms.split('\n').map((term, index) => (
+      <li key={index}>{term}</li>
+    ))
+  : Array.isArray(agreementData.terms) 
+    ? agreementData.terms.map((term, index) => (
+        <li key={index}>{term}</li>
+      ))
+    : <li>{agreementData.terms}</li>
+}</ul>
           </div>
         </div>
 
