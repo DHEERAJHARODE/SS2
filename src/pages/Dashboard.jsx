@@ -75,13 +75,16 @@ export default function Dashboard() {
     alert(`Access Key Copied: ${keyText}`);
   };
 
-  // 🔥 NEW: Share Link Generator
+  // ✅ SMART SHARE LOGIC (Auto-Detects Mobile vs PC)
   const handleShare = async (accessKey, propertyName) => {
-    // Generate the auto-redirect share link
     const directLink = `${window.location.origin}/share/${accessKey}`;
     const shareText = `Hello!\nPlease complete your tenant verification & agreement form for ${propertyName}.\n\nClick the link below to fill it out directly:\n${directLink}`;
 
-    if (navigator.share) {
+    // Regex to detect if user is on a mobile device
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile && navigator.share) {
+      // If Mobile: Open Native Share Menu (WhatsApp, etc.)
       try {
         await navigator.share({
           title: "Tenant Agreement Form",
@@ -91,8 +94,9 @@ export default function Dashboard() {
         console.error("Error sharing:", err);
       }
     } else {
+      // If Desktop/PC: Automatically copy to clipboard instead of opening a popup
       navigator.clipboard.writeText(shareText);
-      alert("Direct Link Copied to Clipboard!\nYou can now paste and send it to your tenant.");
+      alert("Link & Message Copied to Clipboard! 🔗\n\nYou can now paste and send it to your tenant via WhatsApp Web or Email.");
     }
   };
 
@@ -279,6 +283,7 @@ export default function Dashboard() {
 
                           <td className="td-action">
                             <div className="action-buttons-wrapper">
+                              {/* 1. Open Folder Button */}
                               <button 
                                 onClick={() => navigate(`/agreement-details/${ag.id}`, { state: { agreement: ag } })}
                                 className="open-folder-btn"
@@ -286,6 +291,7 @@ export default function Dashboard() {
                                 <FolderOpen size={18} /> <span>Open</span>
                               </button>
 
+                              {/* 2. Smart Share Button */}
                               <button 
                                 onClick={() => handleShare(ag.accessKey, ag.propertyName)}
                                 className="share-btn"

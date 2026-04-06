@@ -236,7 +236,7 @@
 .agreements-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 700px; /* Thoda space badhaya desktop ke liye */
+  min-width: 750px; 
 }
 
 .agreements-table th, .agreements-table td {
@@ -332,7 +332,6 @@
   .stats-grid { grid-template-columns: 1fr; }
   .form-card { padding: 20px; max-width: 100%; }
   
-  /* 🔥 PREMIUM MOBILE CARD LAYOUT FOR AGREEMENTS 🔥 */
   .table-container { 
     padding: 0; background: transparent; box-shadow: none; 
   }
@@ -340,7 +339,6 @@
   .agreements-table, .agreements-table tbody { display: block; width: 100%; }
   .agreements-table thead { display: none; }
   
-  /* The Card Container */
   .agreement-card-row {
     display: flex;
     flex-direction: column;
@@ -361,15 +359,12 @@
     text-align: left;
   }
 
-  /* Property Title & Date */
   .td-property { margin-bottom: 5px; }
   .property-title { font-size: 20px; font-weight: 800; color: #0f172a; line-height: 1.3; margin-bottom: 4px; }
   .property-date { font-size: 13px; color: #64748b; font-weight: 500; }
 
-  /* Status Badge */
   .td-status { position: absolute; top: 20px; right: 20px; }
 
-  /* Access Key Box - Highlighting it beautifully */
   .td-key {
     background: #f8fafc;
     border: 1px dashed #cbd5e1;
@@ -384,7 +379,7 @@
   .key-text { font-size: 16px; background: transparent; padding: 0; margin-left: 10px; }
   .copy-key-btn { padding: 8px; border-radius: 8px; background: #ffffff; border: 1px solid #e0e7ff; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
 
-  /* Action Buttons Wrapper - 50/50 Split on Mobile */
+  /* 🔥 50-50 ACTION BUTTONS 🔥 */
   .td-action {
     margin-top: 10px;
   }
@@ -395,11 +390,11 @@
   }
 
   .open-folder-btn, .share-btn {
-    flex: 1; /* Takes half space perfectly */
+    flex: 1; /* Takes exactly 50% width */
     width: auto;
     padding: 14px 5px;
     border-radius: 12px;
-    font-size: 14px;
+    font-size: 15px; 
     font-weight: 700;
     color: white;
     border: none;
