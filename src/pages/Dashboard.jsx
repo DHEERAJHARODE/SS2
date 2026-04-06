@@ -14,7 +14,7 @@ import {
   Menu, 
   X,
   FolderOpen,
-  Share2 // ✅ IMPORT Share Icon
+  Share2 
 } from "lucide-react";
 import "./Dashboard.css";
 
@@ -75,11 +75,11 @@ export default function Dashboard() {
     alert(`Access Key Copied: ${keyText}`);
   };
 
-  // ✅ New Direct Share Logic
+  // 🔥 NEW: Share Link Generator
   const handleShare = async (accessKey, propertyName) => {
-    // Generate direct portal link (TenantPortal with auto key embedded)
-    const directLink = `${window.location.origin}/fill-agreement/${accessKey}`;
-    const shareText = `Hello!\nPlease complete your tenant verification & agreement form for ${propertyName}.\n\nClick the link below to fill it out directly:\n${directLink}\n\nAccess Key (if required): ${accessKey}`;
+    // Generate the auto-redirect share link
+    const directLink = `${window.location.origin}/share/${accessKey}`;
+    const shareText = `Hello!\nPlease complete your tenant verification & agreement form for ${propertyName}.\n\nClick the link below to fill it out directly:\n${directLink}`;
 
     if (navigator.share) {
       try {
@@ -91,9 +91,8 @@ export default function Dashboard() {
         console.error("Error sharing:", err);
       }
     } else {
-      // Fallback for Desktop (Copy to Clipboard)
       navigator.clipboard.writeText(shareText);
-      alert("Direct Link & Key Copied to Clipboard!\nYou can now paste and send it to your tenant.");
+      alert("Direct Link Copied to Clipboard!\nYou can now paste and send it to your tenant.");
     }
   };
 
@@ -253,25 +252,21 @@ export default function Dashboard() {
                       {agreements.map((ag) => (
                         <tr key={ag.id} className="agreement-card-row">
                           
-                          {/* Property Name & Date (Date shows under name on mobile) */}
                           <td className="td-property">
                             <div className="property-title">{ag.propertyName}</div>
                             <div className="property-date desktop-hidden">Added on {new Date(ag.createdAt).toLocaleDateString()}</div>
                           </td>
                           
-                          {/* Date (Only visible on Desktop) */}
                           <td className="td-date mobile-hidden">
                             {new Date(ag.createdAt).toLocaleDateString()}
                           </td>
                           
-                          {/* Status Badge */}
                           <td className="td-status">
                             <span className={`badge ${ag.status === 'filled' ? 'success' : 'pending'}`}>
                               {ag.currentTenants || 0} / {ag.maxTenants || 1} Signed
                             </span>
                           </td>
 
-                          {/* Access Key Section */}
                           <td className="td-key">
                             <span className="key-label mobile-only">Access Key:</span>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -282,10 +277,8 @@ export default function Dashboard() {
                             </div>
                           </td>
 
-                          {/* Action Buttons: Open & Share (Side by Side) */}
                           <td className="td-action">
                             <div className="action-buttons-wrapper">
-                              {/* Open Folder Button */}
                               <button 
                                 onClick={() => navigate(`/agreement-details/${ag.id}`, { state: { agreement: ag } })}
                                 className="open-folder-btn"
@@ -293,7 +286,6 @@ export default function Dashboard() {
                                 <FolderOpen size={18} /> <span>Open</span>
                               </button>
 
-                              {/* Share Direct Link Button */}
                               <button 
                                 onClick={() => handleShare(ag.accessKey, ag.propertyName)}
                                 className="share-btn"
