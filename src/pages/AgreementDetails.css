@@ -1,24 +1,25 @@
 /* src/pages/AgreementDetails.css */
 
 .folder-page-wrapper {
-  background: #f0f4f8; /* Soft premium background */
+  background: #f0f4f8; 
   min-height: 100vh;
   font-family: 'Inter', 'Segoe UI', sans-serif;
   padding-bottom: 40px;
 }
 
-/* --- Header Styling --- */
+/* --- Header Styling (FIXED OVERLAP) --- */
 .folder-header {
   background: #ffffff;
   padding: 20px 40px;
   border-bottom: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 20px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.03);
   position: sticky;
   top: 0;
   z-index: 100;
+  flex-wrap: wrap; /* ✅ अगर जगह कम होगी तो टेक्स्ट नीचे आ जाएगा, ओवरलैप नहीं होगा */
 }
 
 .back-btn {
@@ -33,6 +34,7 @@
   cursor: pointer;
   font-weight: 600;
   transition: all 0.2s ease;
+  flex-shrink: 0; /* ✅ बटन सिकुड़ेगा नहीं */
 }
 
 .back-btn:hover {
@@ -41,12 +43,18 @@
   transform: translateX(-2px);
 }
 
+.header-info {
+  flex: 1; /* ✅ टेक्स्ट को बची हुई सारी जगह मिलेगी */
+  min-width: 250px;
+}
+
 .header-info h1 {
   margin: 0;
-  font-size: 24px;
+  font-size: 22px;
   color: #0f172a;
   font-weight: 800;
   letter-spacing: -0.5px;
+  line-height: 1.3;
 }
 
 .header-info p {
@@ -182,6 +190,8 @@
   margin-bottom: 30px;
   padding-bottom: 20px;
   border-bottom: 2px solid #f1f5f9;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
 .doc-title-wrapper {
@@ -245,7 +255,7 @@
 .preview-img {
   width: 100%;
   height: 200px;
-  object-fit: contain; /* Protects documents from cropping */
+  object-fit: contain; 
   background: #ffffff;
   border-radius: 12px;
   border: 1px solid #cbd5e1;
@@ -254,7 +264,7 @@
 }
 
 .preview-img.selfie {
-  object-fit: cover; /* Only selfie should fill the box */
+  object-fit: cover; 
   padding: 0;
 }
 
@@ -331,7 +341,7 @@
     align-items: flex-start;
     padding: 20px;
     gap: 15px;
-    position: relative; /* Remove sticky on mobile for better scroll */
+    position: relative;
   }
 
   .header-info h1 {
@@ -371,7 +381,6 @@
     font-weight: 500;
   }
 
-  /* 🚨 Mobile Fix: Stack Aadhaar Images vertically */
   .aadhaar-images {
     flex-direction: column;
     gap: 15px;

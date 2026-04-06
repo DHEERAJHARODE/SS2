@@ -38,15 +38,42 @@ export default function AgreementDetails() {
     <div className="folder-page-wrapper">
       
       {/* Header */}
-      <header className="folder-header">
-        <button onClick={() => navigate("/dashboard")} className="back-btn">
-          <ArrowLeft size={20} /> Back to Dashboard
-        </button>
-        <div className="header-info">
-          <h1>{agreement.propertyName} - Tenant Documents</h1>
-          <p>Access Key: <strong>{agreement.accessKey}</strong> | Total Signatures: {tenants.length}/{agreement.maxTenants}</p>
+      {/* 100% BULLETPROOF HEADER (No Classes, Only Inline Styles) */}
+      <div style={{ padding: "20px 5%", backgroundColor: "#ffffff", borderBottom: "1px solid #e2e8f0" }}>
+        
+        {/* Top Row: Back Button */}
+        <div style={{ display: "block", marginBottom: "16px" }}>
+          <button 
+            onClick={() => navigate("/dashboard")} 
+            style={{
+              display: "inline-flex", 
+              alignItems: "center", 
+              gap: "8px", 
+              padding: "10px 16px", 
+              border: "1px solid #cbd5e1", 
+              borderRadius: "10px", 
+              backgroundColor: "#f8fafc", 
+              cursor: "pointer",
+              fontWeight: "600",
+              color: "#334155",
+              fontSize: "14px"
+            }}
+          >
+            <ArrowLeft size={18} /> Back to Dashboard
+          </button>
         </div>
-      </header>
+        
+        {/* Bottom Row: Text Info */}
+        <div style={{ display: "block" }}>
+          <h1 style={{ margin: "0 0 8px 0", fontSize: "22px", color: "#0f172a", fontWeight: "800", lineHeight: "1.4" }}>
+            {agreement.propertyName} - Tenant Documents
+          </h1>
+          <p style={{ margin: 0, color: "#475569", fontSize: "14px", fontWeight: "500", lineHeight: "1.6" }}>
+            Access Key: <span style={{ backgroundColor: "#eff6ff", color: "#2563eb", padding: "3px 8px", borderRadius: "6px", fontWeight: "bold", border: "1px solid #bfdbfe" }}>{agreement.accessKey}</span> | Total Signatures: {tenants.length}/{agreement.maxTenants}
+          </p>
+        </div>
+
+      </div>
 
       {/* Main Content */}
       <div className="folder-container">
