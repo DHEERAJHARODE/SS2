@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import TenantPortal from "./pages/TenantPortal";
 import ContractView from "./pages/ContractView";
 import TenantAgreement from "./pages/TenantAgreement"; 
+import AgreementDetails from "./pages/AgreementDetails"; // ✅ New Folder View Page
 import "./App.css";
 
 function AppRoutes() {
@@ -22,7 +23,7 @@ function AppRoutes() {
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
         
-        {/* ✅ FIX: पहले से लॉगिन यूज़र को अब Home (/) पर भेजा जाएगा */}
+        {/* Login / Signup */}
         <Route 
           path="/login" 
           element={user ? <Navigate to="/" /> : <Login />} 
@@ -44,6 +45,12 @@ function AppRoutes() {
           path="/dashboard" 
           element={user ? <Dashboard /> : <Navigate to="/login" />} 
         />
+        
+        {/* ✅ NEW: Tenant Folders View */}
+        <Route 
+          path="/agreement-details/:id" 
+          element={user ? <AgreementDetails /> : <Navigate to="/login" />} 
+        />  
         
         <Route 
           path="/contract" 

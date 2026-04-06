@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { db } from "../firebase";
 import { collection, addDoc, query, where, onSnapshot } from "firebase/firestore";
 import { useAuth } from "../context/AuthContext";
+// ✅ 1. IMPORT useNavigate
+import { useNavigate } from "react-router-dom"; 
 import { 
   LayoutDashboard, 
   FileText, 
@@ -11,12 +13,14 @@ import {
   CheckCircle, 
   Clock,
   Menu, 
-  X     
+  X,
+  FolderOpen // ✅ 2. IMPORT FolderOpen Icon
 } from "lucide-react";
 import "./Dashboard.css";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate(); // ✅ Initialize navigate
   const [activeTab, setActiveTab] = useState("overview");
   const [agreements, setAgreements] = useState([]);
   
@@ -67,13 +71,11 @@ export default function Dashboard() {
     }
   };
 
-  // ✅ 1. Existing function for Full Link
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(`${window.location.origin}/portal`);
     alert("Tenant Portal Link Copied! Share this key: " + text);
   };
 
-  // ✅ 2. NEW function to copy ONLY the Access Key
   const copyKeyOnly = (keyText) => {
     navigator.clipboard.writeText(keyText);
     alert(`Access Key Copied: ${keyText}`);
@@ -267,11 +269,10 @@ export default function Dashboard() {
                           <td>{new Date(ag.createdAt).toLocaleDateString()}</td>
                           <td>
                             <span className={`badge ${ag.status === 'filled' ? 'success' : 'pending'}`}>
-                              {ag.currentTenants || 0} Signed
+                              {ag.currentTenants || 0} / {ag.maxTenants || 1} Signed
                             </span>
                           </td>
 
-                          {/* ✅ 3. NEW: Access Key Box with embedded Copy Button */}
                           <td>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                               <span className="key-text" style={{ margin: 0 }}>{ag.accessKey}</span>
@@ -299,9 +300,20 @@ export default function Dashboard() {
                           </td>
 
                           <td>
-                            <button onClick={() => copyToClipboard(ag.accessKey)} className="action-btn">
-                              <Copy size={16} /> <span className="btn-text">Portal Link</span>
-                            </button>
+                            <div style={{ display: 'flex', gap: '10px' }}>
+                              {/* ✅ 3. NEW: Open Folder Button */}
+                              <button 
+                                onClick={() => navigate(`/agreement-details/${ag.id}`, { state: { agreement: ag } })}
+                                className="action-btn"
+                                style={{ backgroundColor: '#f1f5f9', color: '#0f172a', border: '1px solid #cbd5e1' }}
+                              >
+                                <FolderOpen size={16} /> <span className="btn-text">Open</span>
+                              </button>
+
+                              <button onClick={() => copyToClipboard(ag.accessKey)} className="action-btn">
+                                <Copy size={16} /> <span className="btn-text">Portal Link</span>
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
