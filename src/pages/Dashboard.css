@@ -32,16 +32,15 @@
 .brand h2 {
   font-size: 24px;
   color: #1e293b;
-  margin: 0; /* Margin handled by sidebar-header */
+  margin: 0; 
   font-weight: 800;
   letter-spacing: -0.5px;
 }
 
 .brand .dot { color: #007bff; }
 
-/* Close Button (Hidden on Desktop) */
 .close-sidebar-btn {
-  display: none; /* Hide by default */
+  display: none; 
   background: none;
   border: none;
   color: #64748b;
@@ -166,6 +165,13 @@
   align-items: center;
   gap: 20px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
 }
 
 .icon-box {
@@ -214,7 +220,7 @@
   width: 100%;
 }
 
-/* TABLES */
+/* TABLES (DESKTOP) */
 .table-container {
   background: white;
   padding: 20px;
@@ -230,110 +236,191 @@
 .agreements-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 600px;
+  min-width: 700px; /* Thoda space badhaya desktop ke liye */
 }
 
 .agreements-table th, .agreements-table td {
   padding: 15px;
   text-align: left;
   border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
 }
 
-.agreements-table th { color: #64748b; font-weight: 600; }
-.badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+.agreements-table th { color: #64748b; font-weight: 600; font-size: 14px; }
+.agreements-table tr:hover { background-color: #f8fafc; }
+
+.badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; display: inline-block; }
 .badge.success { background: #dcfce7; color: #166534; }
 .badge.pending { background: #fef9c3; color: #854d0e; }
-.key-text { font-family: monospace; background: #f1f5f9; padding: 4px 8px; border-radius: 4px; }
 
-.action-btn {
-  background: none; border: 1px solid #e2e8f0;
-  padding: 6px 12px; border-radius: 6px; cursor: pointer;
-  display: flex; align-items: center; gap: 6px;
-  font-size: 12px;
+.key-text { font-family: monospace; background: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-weight: bold; color: #334155;}
+
+.copy-key-btn {
+  background: #e0e7ff; color: #4338ca; border: none; padding: 6px;
+  border-radius: 6px; cursor: pointer; display: flex; align-items: center;
+  justify-content: center; transition: 0.2s ease;
+}
+.copy-key-btn:hover { background: #c7d2fe; }
+
+/* Desktop Action Buttons Wrapper */
+.action-buttons-wrapper {
+  display: flex;
+  gap: 10px;
 }
 
-/* --- MOBILE RESPONSIVE STYLES --- */
+/* Open Folder Btn - Desktop */
+.open-folder-btn {
+  background: #f1f5f9; border: 1px solid #cbd5e1;
+  padding: 8px 16px; border-radius: 8px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-size: 13px; font-weight: 600; color: #0f172a;
+  transition: all 0.2s;
+}
+.open-folder-btn:hover { background-color: #e2e8f0; transform: translateY(-1px); }
+
+/* Share Btn - Desktop */
+.share-btn {
+  background: #f0fdf4; border: 1px solid #bbf7d0;
+  padding: 8px 16px; border-radius: 8px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-size: 13px; font-weight: 600; color: #166534;
+  transition: all 0.2s;
+}
+.share-btn:hover { background-color: #dcfce7; transform: translateY(-1px); }
+
+/* Utilities */
+.mobile-only { display: none; }
+.desktop-hidden { display: none; }
+
+/* --- MOBILE RESPONSIVE STYLES (PREMIUM UI) --- */
 .mobile-header { display: none; }
 .mobile-page-title { display: none; }
 .sidebar-overlay { display: none; }
 
 @media screen and (max-width: 768px) {
-  /* 1. Mobile Header Bar */
   .mobile-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px 20px;
-    background: white;
-    border-bottom: 1px solid #eee;
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 900;
-    height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 15px 20px; background: white; border-bottom: 1px solid #eee;
+    position: fixed; top: 0; left: 0; right: 0; z-index: 900; height: 60px;
   }
 
-  .mobile-menu-btn {
-    background: none; border: none; cursor: pointer; color: #333;
-    padding: 0;
-  }
-  
-  .mobile-brand {
-    font-weight: 800; font-size: 18px; color: #1e293b;
-  }
-  
-  .mobile-avatar {
-    width: 32px; height: 32px; border-radius: 50%;
-  }
+  .mobile-menu-btn { background: none; border: none; cursor: pointer; color: #333; padding: 0; }
+  .mobile-brand { font-weight: 800; font-size: 18px; color: #1e293b; }
+  .mobile-avatar { width: 32px; height: 32px; border-radius: 50%; }
 
-  /* 2. Sidebar Logic */
   .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    transform: translateX(-100%); /* Hide sidebar */
-    box-shadow: 4px 0 15px rgba(0,0,0,0.1);
-    z-index: 1000;
+    position: fixed; top: 0; left: 0; height: 100%;
+    transform: translateX(-100%); box-shadow: 4px 0 15px rgba(0,0,0,0.1); z-index: 1000;
   }
-
-  .sidebar.open {
-    transform: translateX(0); /* Show sidebar */
-  }
-
-  .close-sidebar-btn {
-    display: block; /* Show Close button only on mobile */
-  }
+  .sidebar.open { transform: translateX(0); }
+  .close-sidebar-btn { display: block; }
 
   .sidebar-overlay {
-    display: block;
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 950;
+    display: block; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5); z-index: 950;
   }
 
-  /* 3. Main Content Adjustments */
-  .main-content {
-    padding: 20px;
-    padding-top: 80px; /* Space for fixed header */
-  }
+  .main-content { padding: 20px; padding-top: 80px; }
+  .desktop-only { display: none; } 
+  .mobile-hidden { display: none; }
+  .mobile-only { display: inline-block; }
+  .desktop-hidden { display: block; }
 
-  .desktop-only { display: none; } /* Hide big header */
+  .mobile-page-title { display: block; margin-bottom: 20px; }
+  .mobile-page-title h2 { font-size: 22px; color: #0f172a; margin: 0; font-weight: 800; }
 
-  .mobile-page-title {
-    display: block;
-    margin-bottom: 20px;
-  }
-  
-  .mobile-page-title h2 {
-    font-size: 22px;
-    color: #0f172a;
-    margin: 0;
-  }
-
-  /* 4. Content Elements */
   .stats-grid { grid-template-columns: 1fr; }
   .form-card { padding: 20px; max-width: 100%; }
-  .table-container { padding: 15px; }
-  .btn-text { display: none; }
+  
+  /* 🔥 PREMIUM MOBILE CARD LAYOUT FOR AGREEMENTS 🔥 */
+  .table-container { 
+    padding: 0; background: transparent; box-shadow: none; 
+  }
+  
+  .agreements-table, .agreements-table tbody { display: block; width: 100%; }
+  .agreements-table thead { display: none; }
+  
+  /* The Card Container */
+  .agreement-card-row {
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    gap: 15px;
+    position: relative;
+  }
+
+  .agreements-table td {
+    display: block;
+    padding: 0;
+    border: none;
+    text-align: left;
+  }
+
+  /* Property Title & Date */
+  .td-property { margin-bottom: 5px; }
+  .property-title { font-size: 20px; font-weight: 800; color: #0f172a; line-height: 1.3; margin-bottom: 4px; }
+  .property-date { font-size: 13px; color: #64748b; font-weight: 500; }
+
+  /* Status Badge */
+  .td-status { position: absolute; top: 20px; right: 20px; }
+
+  /* Access Key Box - Highlighting it beautifully */
+  .td-key {
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 12px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 5px;
+  }
+  .key-label { font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .key-text { font-size: 16px; background: transparent; padding: 0; margin-left: 10px; }
+  .copy-key-btn { padding: 8px; border-radius: 8px; background: #ffffff; border: 1px solid #e0e7ff; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+
+  /* Action Buttons Wrapper - 50/50 Split on Mobile */
+  .td-action {
+    margin-top: 10px;
+  }
+  .action-buttons-wrapper {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .open-folder-btn, .share-btn {
+    flex: 1; /* Takes half space perfectly */
+    width: auto;
+    padding: 14px 5px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: transform 0.2s;
+  }
+
+  .open-folder-btn {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
+  }
+
+  .share-btn {
+    background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+    box-shadow: 0 6px 15px rgba(34, 197, 94, 0.3);
+  }
+
+  .open-folder-btn:active, .share-btn:active {
+    transform: scale(0.96);
+  }
 }

@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { db } from "../firebase";
 import { collection, addDoc, query, where, onSnapshot } from "firebase/firestore";
 import { useAuth } from "../context/AuthContext";
-// ✅ 1. IMPORT useNavigate
 import { useNavigate } from "react-router-dom"; 
 import { 
   LayoutDashboard, 
@@ -14,17 +13,17 @@ import {
   Clock,
   Menu, 
   X,
-  FolderOpen // ✅ 2. IMPORT FolderOpen Icon
+  FolderOpen,
+  Share2 // ✅ IMPORT Share Icon
 } from "lucide-react";
 import "./Dashboard.css";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
-  const navigate = useNavigate(); // ✅ Initialize navigate
+  const navigate = useNavigate(); 
   const [activeTab, setActiveTab] = useState("overview");
   const [agreements, setAgreements] = useState([]);
   
-  // Mobile Sidebar State
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -62,7 +61,7 @@ export default function Dashboard() {
         createdAt: new Date().toISOString(),
         tenantSignature: null
       });
-      alert("Agreement Created! Share the Access Key.");
+      alert("Agreement Created! Share the Access Key with tenants.");
       setActiveTab("agreements");
       setFormData({ propertyName: "", rentAmount: "", maxTenants: 1, terms: formData.terms });
     } catch (err) {
@@ -71,14 +70,31 @@ export default function Dashboard() {
     }
   };
 
-  const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(`${window.location.origin}/portal`);
-    alert("Tenant Portal Link Copied! Share this key: " + text);
-  };
-
   const copyKeyOnly = (keyText) => {
     navigator.clipboard.writeText(keyText);
     alert(`Access Key Copied: ${keyText}`);
+  };
+
+  // ✅ New Direct Share Logic
+  const handleShare = async (accessKey, propertyName) => {
+    // Generate direct portal link (TenantPortal with auto key embedded)
+    const directLink = `${window.location.origin}/fill-agreement/${accessKey}`;
+    const shareText = `Hello!\nPlease complete your tenant verification & agreement form for ${propertyName}.\n\nClick the link below to fill it out directly:\n${directLink}\n\nAccess Key (if required): ${accessKey}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Tenant Agreement Form",
+          text: shareText,
+        });
+      } catch (err) {
+        console.error("Error sharing:", err);
+      }
+    } else {
+      // Fallback for Desktop (Copy to Clipboard)
+      navigator.clipboard.writeText(shareText);
+      alert("Direct Link & Key Copied to Clipboard!\nYou can now paste and send it to your tenant.");
+    }
   };
 
   const handleNavClick = (tab) => {
@@ -123,22 +139,13 @@ export default function Dashboard() {
         </div>
 
         <nav className="nav-menu">
-          <button 
-            className={activeTab === "overview" ? "active" : ""} 
-            onClick={() => handleNavClick("overview")}
-          >
+          <button className={activeTab === "overview" ? "active" : ""} onClick={() => handleNavClick("overview")}>
             <LayoutDashboard size={20} /> Overview
           </button>
-          <button 
-            className={activeTab === "create" ? "active" : ""} 
-            onClick={() => handleNavClick("create")}
-          >
+          <button className={activeTab === "create" ? "active" : ""} onClick={() => handleNavClick("create")}>
             <PlusCircle size={20} /> Create Agreement
           </button>
-          <button 
-            className={activeTab === "agreements" ? "active" : ""} 
-            onClick={() => handleNavClick("agreements")}
-          >
+          <button className={activeTab === "agreements" ? "active" : ""} onClick={() => handleNavClick("agreements")}>
             <FileText size={20} /> My Agreements
           </button>
         </nav>
@@ -203,39 +210,19 @@ export default function Dashboard() {
               <form onSubmit={handleCreateAgreement}>
                 <div className="form-group">
                   <label>Property Name / Address</label>
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Flat 101, Galaxy Apartment" 
-                    value={formData.propertyName}
-                    onChange={(e) => setFormData({...formData, propertyName: e.target.value})}
-                  />
+                  <input type="text" placeholder="e.g. Flat 101, Galaxy Apartment" value={formData.propertyName} onChange={(e) => setFormData({...formData, propertyName: e.target.value})} />
                 </div>
                 <div className="form-group">
                   <label>Monthly Rent (₹)</label>
-                  <input 
-                    type="number" 
-                    placeholder="e.g. 12000" 
-                    value={formData.rentAmount}
-                    onChange={(e) => setFormData({...formData, rentAmount: e.target.value})}
-                  />
+                  <input type="number" placeholder="e.g. 12000" value={formData.rentAmount} onChange={(e) => setFormData({...formData, rentAmount: e.target.value})} />
                 </div>
                 <div className="form-group">
                   <label>Number of Tenants (How many people will sign?)</label>
-                  <input 
-                    type="number" 
-                    min="1"
-                    placeholder="e.g. 2" 
-                    value={formData.maxTenants}
-                    onChange={(e) => setFormData({...formData, maxTenants: e.target.value})}
-                  />
+                  <input type="number" min="1" placeholder="e.g. 2" value={formData.maxTenants} onChange={(e) => setFormData({...formData, maxTenants: e.target.value})} />
                 </div>
                 <div className="form-group">
                   <label>Terms & Conditions</label>
-                  <textarea 
-                    rows="5"
-                    value={formData.terms}
-                    onChange={(e) => setFormData({...formData, terms: e.target.value})}
-                  ></textarea>
+                  <textarea rows="5" value={formData.terms} onChange={(e) => setFormData({...formData, terms: e.target.value})}></textarea>
                 </div>
                 <button type="submit" className="primary-btn">Generate Agreement</button>
               </form>
@@ -255,8 +242,8 @@ export default function Dashboard() {
                   <table className="agreements-table">
                     <thead>
                       <tr>
-                        <th>Property</th>
-                        <th>Date</th>
+                        <th>Property Name</th>
+                        <th className="mobile-hidden">Date Created</th>
                         <th>Status</th>
                         <th>Access Key</th>
                         <th>Action</th>
@@ -264,57 +251,58 @@ export default function Dashboard() {
                     </thead>
                     <tbody>
                       {agreements.map((ag) => (
-                        <tr key={ag.id}>
-                          <td>{ag.propertyName}</td>
-                          <td>{new Date(ag.createdAt).toLocaleDateString()}</td>
-                          <td>
+                        <tr key={ag.id} className="agreement-card-row">
+                          
+                          {/* Property Name & Date (Date shows under name on mobile) */}
+                          <td className="td-property">
+                            <div className="property-title">{ag.propertyName}</div>
+                            <div className="property-date desktop-hidden">Added on {new Date(ag.createdAt).toLocaleDateString()}</div>
+                          </td>
+                          
+                          {/* Date (Only visible on Desktop) */}
+                          <td className="td-date mobile-hidden">
+                            {new Date(ag.createdAt).toLocaleDateString()}
+                          </td>
+                          
+                          {/* Status Badge */}
+                          <td className="td-status">
                             <span className={`badge ${ag.status === 'filled' ? 'success' : 'pending'}`}>
                               {ag.currentTenants || 0} / {ag.maxTenants || 1} Signed
                             </span>
                           </td>
 
-                          <td>
+                          {/* Access Key Section */}
+                          <td className="td-key">
+                            <span className="key-label mobile-only">Access Key:</span>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                              <span className="key-text" style={{ margin: 0 }}>{ag.accessKey}</span>
-                              <button 
-                                onClick={() => copyKeyOnly(ag.accessKey)}
-                                title="Copy Access Key"
-                                style={{
-                                  background: '#e0e7ff',
-                                  color: '#4338ca',
-                                  border: 'none',
-                                  padding: '6px',
-                                  borderRadius: '6px',
-                                  cursor: 'pointer',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  transition: '0.2s ease'
-                                }}
-                                onMouseOver={(e) => e.currentTarget.style.background = '#c7d2fe'}
-                                onMouseOut={(e) => e.currentTarget.style.background = '#e0e7ff'}
-                              >
-                                <Copy size={14} />
+                              <span className="key-text">{ag.accessKey}</span>
+                              <button onClick={() => copyKeyOnly(ag.accessKey)} title="Copy Access Key" className="copy-key-btn">
+                                <Copy size={16} />
                               </button>
                             </div>
                           </td>
 
-                          <td>
-                            <div style={{ display: 'flex', gap: '10px' }}>
-                              {/* ✅ 3. NEW: Open Folder Button */}
+                          {/* Action Buttons: Open & Share (Side by Side) */}
+                          <td className="td-action">
+                            <div className="action-buttons-wrapper">
+                              {/* Open Folder Button */}
                               <button 
                                 onClick={() => navigate(`/agreement-details/${ag.id}`, { state: { agreement: ag } })}
-                                className="action-btn"
-                                style={{ backgroundColor: '#f1f5f9', color: '#0f172a', border: '1px solid #cbd5e1' }}
+                                className="open-folder-btn"
                               >
-                                <FolderOpen size={16} /> <span className="btn-text">Open</span>
+                                <FolderOpen size={18} /> <span>Open</span>
                               </button>
 
-                              <button onClick={() => copyToClipboard(ag.accessKey)} className="action-btn">
-                                <Copy size={16} /> <span className="btn-text">Portal Link</span>
+                              {/* Share Direct Link Button */}
+                              <button 
+                                onClick={() => handleShare(ag.accessKey, ag.propertyName)}
+                                className="share-btn"
+                              >
+                                <Share2 size={18} /> <span>Share</span>
                               </button>
                             </div>
                           </td>
+                          
                         </tr>
                       ))}
                     </tbody>
