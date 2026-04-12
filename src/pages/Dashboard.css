@@ -336,9 +336,13 @@
     padding: 0; background: transparent; box-shadow: none; 
   }
   
-  .agreements-table, .agreements-table tbody { display: block; width: 100%; }
+  .agreements-table, .agreements-table tbody { 
+    display: block; 
+    width: 100%; 
+    min-width: 0; /* 🔥 FIX: यह लाइन डेस्कटॉप की 750px चौड़ाई को मोबाइल पर रोक देगी */
+  }
   .agreements-table thead { display: none; }
-  
+
   .agreement-card-row {
     display: flex;
     flex-direction: column;
