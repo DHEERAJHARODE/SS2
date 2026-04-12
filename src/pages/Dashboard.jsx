@@ -75,11 +75,12 @@ export default function Dashboard() {
     alert(`Access Key Copied: ${keyText}`);
   };
 
-  // ✅ SMART SHARE LOGIC (Auto-Detects Mobile vs PC)
+  // 🔥 UPDATED SHARE LOGIC: Now shares Portal Link + Access Key
   const handleShare = async (accessKey, propertyName) => {
-    // Generate Direct Fill Agreement Link
-    const directLink = `${window.location.origin}/fill-agreement/${accessKey}`;
-    const shareText = `Hello!\nPlease complete your tenant verification & agreement form for ${propertyName}.\n\nClick the link below to fill it out directly:\n${directLink}`;
+    const portalLink = `${window.location.origin}/portal`;
+    
+    // यह बिल्कुल वैसा ही मैसेज है जैसा आपने माँगा है
+    const shareText = `Hello!\nPlease complete your tenant verification & agreement form for ${propertyName}.\n\nClick the link below to fill it out directly:\n${portalLink}\n\nAccess Key: ${accessKey}\nKindly enter given access key to fill the form.`;
 
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
@@ -94,7 +95,7 @@ export default function Dashboard() {
       }
     } else {
       navigator.clipboard.writeText(shareText);
-      alert("Link & Message Copied to Clipboard! 🔗\n\nYou can now paste and send it to your tenant via WhatsApp Web or Email.");
+      alert("Portal Link & Key Copied to Clipboard! 🔗\n\nYou can now paste and send it to your tenant via WhatsApp Web or Email.");
     }
   };
 
@@ -289,7 +290,7 @@ export default function Dashboard() {
                                 <FolderOpen size={18} /> <span>Open</span>
                               </button>
 
-                              {/* 2. Smart Share Button */}
+                              {/* 2. Share Button (Sends Portal Link & Key) */}
                               <button 
                                 onClick={() => handleShare(ag.accessKey, ag.propertyName)}
                                 className="share-btn"
