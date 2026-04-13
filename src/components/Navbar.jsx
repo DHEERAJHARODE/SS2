@@ -64,6 +64,9 @@ export default function Navbar() {
           <span className="logo-text">SafeStay</span>
         </div>
         
+        {/* 🔥 NEW: Mobile Overlay for Premium Look 🔥 */}
+        {isMobileOpen && <div className="nav-overlay" onClick={toggleMenu}></div>}
+
         {/* Desktop & Mobile Menu Links */}
         <div className={`nav-links ${isMobileOpen ? 'active' : ''}`}>
           <button onClick={() => handleNavigation('/portal')} className="nav-item">
