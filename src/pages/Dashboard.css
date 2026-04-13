@@ -495,3 +495,52 @@
     transform: scale(0.96);
   }
 }
+.file-upload-wrapper {
+  margin-top: 5px;
+}
+
+.file-upload-label {
+  display: block;
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  background: #f8fafc;
+  transition: all 0.2s;
+}
+
+.file-upload-label:hover {
+  background: #eff6ff;
+  border-color: #3b82f6;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: #64748b;
+}
+
+.sig-preview-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.sig-preview-img {
+  max-width: 200px;
+  max-height: 100px;
+  border-radius: 8px;
+  background: white;
+  padding: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.sig-preview-box span {
+  font-size: 12px;
+  color: #3b82f6;
+  font-weight: 600;
+}

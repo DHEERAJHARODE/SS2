@@ -101,6 +101,7 @@ export default function ContractView() {
           </div>
 
           <div className="signatures">
+            {/* Tenant Signature Section */}
             <div className="sign-box">
               <p className="declaration">I accept all terms & conditions.</p>
               {tenant.signature ? (
@@ -109,8 +110,13 @@ export default function ContractView() {
               <p className="sign-label">Tenant Signature</p>
             </div>
             
+            {/* 🔥 UPDATED: Owner Signature Section 🔥 */}
             <div className="sign-box owner">
-              <div className="placeholder-sign owner-placeholder"></div>
+              {agreement.ownerSignature ? (
+                <img src={agreement.ownerSignature} alt="Owner Sign" className="sign-img" />
+              ) : (
+                <div className="placeholder-sign owner-placeholder">Not Signed</div>
+              )}
               <p className="sign-label">Owner Signature</p>
             </div>
           </div>
