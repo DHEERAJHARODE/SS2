@@ -13,10 +13,11 @@ import TenantPortal from "./pages/TenantPortal";
 import ContractView from "./pages/ContractView";
 import TenantAgreement from "./pages/TenantAgreement"; 
 import AgreementDetails from "./pages/AgreementDetails";
-import Contact from "./pages/Contact"; // 🔥 NEW: Contact Page Import
+import Contact from "./pages/Contact"; 
+import Profile from "./pages/Profile"; // 🔥 NEW: Profile Page Import
 import "./App.css";
 
-// 🔥 NEW: SMART LOADER FOR DIRECT LINKS 🔥
+// 🔥 SMART LOADER FOR DIRECT LINKS 🔥
 // यह फंक्शन डायरेक्ट लिंक से आने वाले किरायेदार का डेटा बैकग्राउंड में निकाल लेगा
 function SmartTenantAgreement() {
   const { key } = useParams();
@@ -82,10 +83,10 @@ function AppRoutes() {
         <Route path="/register-tenant" element={<TenantForm />} />
         <Route path="/portal" element={<TenantPortal />} />
         
-        {/* 🔥 NEW: Contact Us Route */}
+        {/* Contact Us Route */}
         <Route path="/contact" element={<Contact />} />
 
-        {/* ✅ FIX: ओरिजिनल की जगह Smart Wrapper लगा दिया गया है */}
+        {/* Smart Wrapper लगा दिया गया है */}
         <Route path="/fill-agreement/:key" element={<SmartTenantAgreement />} />
         <Route path="/view-contract" element={<ContractView />} />
 
@@ -93,6 +94,9 @@ function AppRoutes() {
         <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/login" />} />
         <Route path="/agreement-details/:id" element={user ? <AgreementDetails /> : <Navigate to="/login" />} />  
         <Route path="/contract" element={user ? <ContractView /> : <Navigate to="/login" />} />
+        
+        {/* 🔥 NEW: My Profile Route */}
+        <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
       </Routes>
     </Router>
   );

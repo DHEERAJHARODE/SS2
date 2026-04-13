@@ -1,0 +1,440 @@
+/* Profile.css */
+
+.profile-page-wrapper {
+  min-height: 100vh;
+  background-color: #f8fafc;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  padding-bottom: 50px;
+}
+
+/* Premium Dark Banner */
+.profile-banner {
+  height: 280px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.banner-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.02)"/></svg>') repeat;
+  opacity: 0.5;
+}
+
+/* Main Content pulling up over the banner */
+.profile-main-content {
+  max-width: 1100px;
+  margin: -100px auto 0; /* Pulls content over the dark banner */
+  padding: 0 20px;
+  position: relative;
+  z-index: 10;
+}
+
+.profile-grid {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+/* --- Left Column: Identity Card --- */
+.profile-identity-card {
+  flex: 1;
+  min-width: 300px;
+  max-width: 350px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  border: 1px solid #f1f5f9;
+}
+
+.avatar-wrapper {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 20px;
+}
+
+.profile-avatar-large {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 5px solid #ffffff;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
+}
+
+.edit-avatar-btn {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+  transition: transform 0.2s;
+}
+
+.edit-avatar-btn:hover {
+  transform: scale(1.1);
+}
+
+.profile-name {
+  margin: 0 0 5px 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.profile-role {
+  margin: 0 0 25px 0;
+  font-size: 14px;
+  color: #22c55e;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.profile-contact-info {
+  text-align: left;
+  margin-bottom: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.contact-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.contact-icon {
+  color: #94a3b8;
+}
+
+.w-100 { width: 100%; }
+
+.btn-outline-primary {
+  background: transparent;
+  color: #3b82f6;
+  border: 1px solid #3b82f6;
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-outline-primary:hover {
+  background: #eff6ff;
+}
+
+/* --- Right Column: Details & Stats --- */
+.profile-details-section {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.section-heading h3 {
+  margin: 0 0 5px 0;
+  font-size: 22px;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.section-heading p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* Property Stats Grid */
+.profile-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.p-stat-card {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  border-left: 4px solid transparent;
+}
+
+.p-stat-card.blue-border { border-left-color: #3b82f6; }
+.p-stat-card.green-border { border-left-color: #22c55e; }
+.p-stat-card.orange-border { border-left-color: #f97316; }
+
+.p-stat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.blue-bg { background: #eff6ff; color: #3b82f6; }
+.green-bg { background: #f0fdf4; color: #22c55e; }
+.orange-bg { background: #fff7ed; color: #f97316; }
+
+.p-stat-data h4 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.p-stat-data span {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Account Security Card */
+.account-security-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
+  border: 1px solid #f1f5f9;
+}
+
+.account-security-card h3 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.security-option {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.security-option:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.sec-icon-box {
+  width: 40px;
+  height: 40px;
+  background: #f8fafc;
+  color: #64748b;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sec-info {
+  flex: 1;
+}
+
+.sec-info h4 {
+  margin: 0 0 3px 0;
+  font-size: 15px;
+  color: #1e293b;
+}
+
+.sec-info p {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.sec-badge.success {
+  background: #dcfce7;
+  color: #166534;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.btn-text {
+  background: none;
+  border: none;
+  color: #3b82f6;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-text:hover {
+  text-decoration: underline;
+}
+
+/* --- MOBILE RESPONSIVE --- */
+@media (max-width: 768px) {
+  .profile-grid {
+    flex-direction: column;
+  }
+  
+  .profile-identity-card {
+    max-width: 100%;
+    width: 100%;
+    margin-top: -60px; /* Adjust pull-up for mobile */
+  }
+
+  .profile-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .security-option {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+/* =========================================
+   🔥 MODALS (EDIT PROFILE & PASSWORD) 🔥
+   ========================================= */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInModal 0.2s ease;
+  padding: 20px;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-box {
+  background: #ffffff;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: slideUpModal 0.3s ease;
+}
+
+@keyframes slideUpModal {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.close-btn {
+  background: #f1f5f9;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.modal-body {
+  padding: 25px;
+}
+
+.modal-form .form-group {
+  margin-bottom: 20px;
+}
+
+.modal-form label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+.modal-form input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 15px;
+  color: #1e293b;
+  box-sizing: border-box;
+  transition: all 0.2s;
+  background: #f8fafc;
+}
+
+.modal-form input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.modal-btn {
+  width: 100%;
+  padding: 14px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.2s;
+}
+
+.modal-btn:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.modal-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
