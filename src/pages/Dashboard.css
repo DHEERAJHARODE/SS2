@@ -288,6 +288,60 @@
 }
 .share-btn:hover { background-color: #dcfce7; transform: translateY(-1px); }
 
+/* =========================================
+   🔥 QUICK ACTIONS BASE STYLES 🔥
+   ========================================= */
+.quick-actions-mobile {
+  margin-top: 30px;
+}
+
+.quick-actions-mobile .section-title {
+  font-size: 18px;
+  color: #1e293b;
+  margin: 0 0 15px 0;
+  font-weight: 800;
+}
+
+.quick-action-btns {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* Create Agreement Button Style */
+.action-btn.create-btn {
+  background-color: #eff6ff;
+  color: #3b82f6;
+  border: 1px solid #bfdbfe;
+}
+
+/* Manage Agreement Button Style */
+.action-btn.manage-btn {
+  background-color: #f5f3ff;
+  color: #8b5cf6;
+  border: 1px solid #ddd6fe;
+}
+
+.action-btn:active {
+  transform: scale(0.98);
+}
+
 /* Utilities */
 .mobile-only { display: none; }
 .desktop-hidden { display: none; }
@@ -329,6 +383,20 @@
   .mobile-page-title { display: block; margin-bottom: 20px; }
   .mobile-page-title h2 { font-size: 22px; color: #0f172a; margin: 0; font-weight: 800; }
 
+  /* 🔥 Quick Actions Mobile Adjustments 🔥 */
+  .quick-actions-mobile {
+    margin-top: 20px;
+  }
+  .quick-action-btns {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .action-btn {
+    width: 100%;
+    padding: 14px;
+    font-size: 15px;
+  }
+
   .stats-grid { grid-template-columns: 1fr; }
   .form-card { padding: 20px; max-width: 100%; }
   
@@ -339,7 +407,7 @@
   .agreements-table, .agreements-table tbody { 
     display: block; 
     width: 100%; 
-    min-width: 0; /* 🔥 FIX: यह लाइन डेस्कटॉप की 750px चौड़ाई को मोबाइल पर रोक देगी */
+    min-width: 0; /* 🔥 FIX: यह लाइन डेस्कटॉप की 750px चौड़ाई को मोबाइल पर रोक देगी */
   }
   .agreements-table thead { display: none; }
 

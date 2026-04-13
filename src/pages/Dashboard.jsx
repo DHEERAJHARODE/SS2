@@ -179,30 +179,46 @@ export default function Dashboard() {
         <div className="content-area">
           
           {/* OVERVIEW TAB */}
+          {/* OVERVIEW TAB */}
           {activeTab === "overview" && (
-            <div className="stats-grid">
-              <div className="stat-card" onClick={() => handleNavClick("agreements")}>
-                <div className="icon-box blue"><FileText size={24}/></div>
-                <div>
-                  <h3>{agreements.length}</h3>
-                  <p>Total Agreements</p>
+            <>
+              <div className="stats-grid">
+                <div className="stat-card" onClick={() => handleNavClick("agreements")}>
+                  <div className="icon-box blue"><FileText size={24}/></div>
+                  <div>
+                    <h3>{agreements.length}</h3>
+                    <p>Total Agreements</p>
+                  </div>
+                </div>
+                <div className="stat-card">
+                  <div className="icon-box green"><CheckCircle size={24}/></div>
+                  <div>
+                    <h3>{agreements.filter(a => a.status === 'filled').length}</h3>
+                    <p>Fully Signed</p>
+                  </div>
+                </div>
+                <div className="stat-card">
+                  <div className="icon-box orange"><Clock size={24}/></div>
+                  <div>
+                    <h3>{agreements.filter(a => a.status === 'pending').length}</h3>
+                    <p>Pending</p>
+                  </div>
                 </div>
               </div>
-              <div className="stat-card">
-                <div className="icon-box green"><CheckCircle size={24}/></div>
-                <div>
-                  <h3>{agreements.filter(a => a.status === 'filled').length}</h3>
-                  <p>Fully Signed</p>
+
+              {/* 🔥 NEW: Quick Actions for Mobile Navigation (Hidden on Desktop) 🔥 */}
+              <div className="quick-actions-mobile desktop-hidden">
+                <h3 className="section-title">Quick Actions</h3>
+                <div className="quick-action-btns">
+                  <button className="action-btn create-btn" onClick={() => handleNavClick("create")}>
+                    <PlusCircle size={22} /> Create Agreement
+                  </button>
+                  <button className="action-btn manage-btn" onClick={() => handleNavClick("agreements")}>
+                    <FolderOpen size={22} /> Manage Agreements
+                  </button>
                 </div>
               </div>
-              <div className="stat-card">
-                <div className="icon-box orange"><Clock size={24}/></div>
-                <div>
-                  <h3>{agreements.filter(a => a.status === 'pending').length}</h3>
-                  <p>Pending</p>
-                </div>
-              </div>
-            </div>
+            </>
           )}
 
           {/* CREATE AGREEMENT TAB */}
