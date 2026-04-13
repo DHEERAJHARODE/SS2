@@ -13,6 +13,7 @@ import TenantPortal from "./pages/TenantPortal";
 import ContractView from "./pages/ContractView";
 import TenantAgreement from "./pages/TenantAgreement"; 
 import AgreementDetails from "./pages/AgreementDetails";
+import Contact from "./pages/Contact"; // 🔥 NEW: Contact Page Import
 import "./App.css";
 
 // 🔥 NEW: SMART LOADER FOR DIRECT LINKS 🔥
@@ -80,6 +81,9 @@ function AppRoutes() {
         
         <Route path="/register-tenant" element={<TenantForm />} />
         <Route path="/portal" element={<TenantPortal />} />
+        
+        {/* 🔥 NEW: Contact Us Route */}
+        <Route path="/contact" element={<Contact />} />
 
         {/* ✅ FIX: ओरिजिनल की जगह Smart Wrapper लगा दिया गया है */}
         <Route path="/fill-agreement/:key" element={<SmartTenantAgreement />} />

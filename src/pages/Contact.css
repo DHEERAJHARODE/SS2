@@ -1,0 +1,378 @@
+/* Contact.css - Premium Dark Theme */
+
+.premium-contact-wrapper {
+  background: #0f172a; /* Slate 900 */
+  min-height: 100vh;
+  color: #fff;
+  overflow: hidden;
+  position: relative;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Background Blobs (Reused logic from Home) */
+.bg-blob {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  filter: blur(100px);
+  opacity: 0.20;
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+}
+.blob-purple { top: -10%; right: -10%; background: #a855f7; animation: float 15s infinite alternate ease-in-out; }
+.blob-blue { bottom: -10%; left: -10%; background: #3b82f6; animation: float 18s infinite alternate-reverse ease-in-out; }
+
+/* Main Container */
+.contact-main-container {
+  flex: 1;
+  padding-top: 130px; /* Accounts for Navbar */
+  padding-bottom: 80px;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+  z-index: 10;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  box-sizing: border-box;
+}
+
+/* Header matching Home.css */
+.contact-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.premium-badge {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px 18px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #94a3b8;
+  margin-bottom: 1.5rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  backdrop-filter: blur(5px);
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 5vw, 4rem); 
+  font-weight: 800;
+  line-height: 1.1;
+  margin: 0 0 1rem 0;
+  letter-spacing: -1px;
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, #60a5fa, #c084fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  color: #cbd5e1;
+  max-width: 600px;
+  font-size: 1.15rem;
+  line-height: 1.6;
+}
+
+/* The Big Glass Container */
+.contact-glass-container {
+  display: flex;
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 24px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+/* Left Side Info */
+.contact-info-dark {
+  flex: 1;
+  padding: 40px;
+  background: rgba(15, 23, 42, 0.5); /* Slightly darker left panel */
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.info-cards-dark {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.feature-card-mini {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  transition: background 0.3s, transform 0.3s;
+}
+
+.feature-card-mini:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateX(5px);
+}
+
+.f-icon-box {
+  width: 45px;
+  height: 45px;
+  background: rgba(96, 165, 250, 0.15);
+  color: #60a5fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.feature-card-mini h4 {
+  margin: 0 0 5px 0;
+  font-size: 1rem;
+  color: #e2e8f0;
+}
+
+.feature-card-mini p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #94a3b8;
+}
+
+/* Right Side Form */
+.contact-form-dark {
+  flex: 1.2;
+  padding: 40px;
+}
+
+.form-title {
+  margin: 0 0 25px 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.form-group-dark {
+  margin-bottom: 20px;
+}
+
+.form-group-dark label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+.input-glass-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-glass-wrapper.align-top {
+  align-items: flex-start;
+}
+
+.input-icon-dark {
+  position: absolute;
+  left: 15px;
+  color: #64748b;
+  transition: color 0.3s;
+}
+
+.text-icon {
+  top: 15px;
+}
+
+/* Input Fields matching dark glass theme */
+.input-glass-wrapper input, 
+.input-glass-wrapper textarea {
+  width: 100%;
+  padding: 14px 14px 14px 45px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: #f8fafc;
+  font-family: inherit;
+  transition: all 0.3s;
+  box-sizing: border-box;
+}
+
+.input-glass-wrapper input::placeholder, 
+.input-glass-wrapper textarea::placeholder {
+  color: #475569;
+}
+
+.input-glass-wrapper input:focus, 
+.input-glass-wrapper textarea:focus {
+  outline: none;
+  border-color: #60a5fa;
+  background: rgba(15, 23, 42, 0.9);
+  box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.1);
+}
+
+.input-glass-wrapper input:focus + .input-icon-dark,
+.input-glass-wrapper textarea:focus + .input-icon-dark {
+  color: #60a5fa;
+}
+
+/* Gradient Submit Button */
+.btn-gradient-submit {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(96, 165, 250, 0.3);
+}
+
+.btn-gradient-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(96, 165, 250, 0.5);
+}
+
+.btn-gradient-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Success State UI */
+.success-glass-state {
+  text-align: center;
+  padding: 30px 20px;
+  animation: fadeIn 0.5s ease;
+}
+
+.success-glow-icon {
+  color: #4ade80;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 15px rgba(74, 222, 128, 0.4));
+  display: flex;
+  justify-content: center;
+}
+
+.success-glass-state h3 {
+  font-size: 1.8rem;
+  color: #f8fafc;
+  margin: 0 0 10px 0;
+}
+
+.success-glass-state p {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+/* Neon Ticket Box */
+.ticket-glass-box {
+  background: rgba(34, 197, 94, 0.05);
+  border: 1px dashed rgba(74, 222, 128, 0.5);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  backdrop-filter: blur(5px);
+}
+
+.ticket-icon-neon {
+  color: #4ade80;
+}
+
+.ticket-details-neon {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.ticket-details-neon span {
+  font-size: 0.75rem;
+  color: #86efac;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.ticket-details-neon strong {
+  font-size: 1.5rem;
+  color: #4ade80;
+  font-family: monospace;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(74, 222, 128, 0.3);
+}
+
+.btn-glass-outline {
+  background: transparent;
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-glass-outline:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .contact-main-container {
+    padding-top: 100px;
+  }
+
+  .hero-title {
+    font-size: 2.2rem;
+  }
+
+  .contact-glass-container {
+    flex-direction: column;
+  }
+
+  .contact-info-dark {
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 30px 20px;
+  }
+
+  .contact-form-dark {
+    padding: 30px 20px;
+  }
+
+  .ticket-glass-box {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .ticket-details-neon {
+    text-align: center;
+  }
+}
