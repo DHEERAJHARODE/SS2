@@ -230,3 +230,34 @@
     justify-content: center;
   }
 }
+.stamp-paper {
+  width: 210mm;
+  min-height: 297mm;
+  height: auto;
+  background-color: white;
+  background-image: url('/stamp_paper.jpg'); 
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+  background-position: top center;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  position: relative;
+  font-family: 'Hind', 'Arial', sans-serif;
+  color: #333;
+  box-sizing: border-box;
+  overflow: visible; /* 🔥 Important for PDF capture */
+}
+
+@media (max-width: 768px) {
+  .contract-container { padding: 10px; }
+  .stamp-paper {
+    width: 100%;
+    min-height: 141.4vw;
+    /* मोबाइल पर रेंडरिंग के दौरान किसी भी ट्रांसफॉर्म को रोकें */
+    transform: none !important; 
+  }
+  .content-overlay {
+    padding-top: 50%; /* स्टैम्प हेडर के लिए जगह */
+    padding-left: 8%;
+    padding-right: 8%;
+  }
+}
