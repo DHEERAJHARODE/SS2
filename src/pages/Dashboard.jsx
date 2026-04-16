@@ -34,7 +34,7 @@ export default function Dashboard() {
     if (!loading && user && !isPremium) {
       alert("🔒 Premium Access Required! Redirecting to SafeStay Premium...");
       // Wapas Gem App ke premium page par bhej do
-      window.location.href = "http://localhost:5173/premium"; 
+      window.location.href = "https://staysafe-taupe.vercel.app/premium"; 
     }
   }, [user, isPremium, loading]);
 
