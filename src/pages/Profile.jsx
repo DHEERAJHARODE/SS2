@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
 import { collection, query, where, getDocs, doc, getDoc, setDoc } from 'firebase/firestore';
-import { updateProfile, updatePassword } from 'firebase/auth'; // 🔥 Added Auth imports
+import { updateProfile, updatePassword } from 'firebase/auth';
 import Navbar from '../components/Navbar';
 import { Mail, Phone, MapPin, ShieldCheck, Building, CheckCircle, Clock, Edit3, User, X } from 'lucide-react';
 import './Profile.css';
@@ -12,8 +12,13 @@ export default function Profile() {
   const [stats, setStats] = useState({ total: 0, signed: 0, pending: 0 });
   const [loading, setLoading] = useState(true);
   
-  // Extra Profile Data State (Phone, Address)
-  const [profileData, setProfileData] = useState({ phone: "", address: "Not Provided" });
+  // ✅ Data state: Yahan humne name aur profileImage add kar diya hai
+  const [profileData, setProfileData] = useState({ 
+    name: user?.displayName || "",
+    phone: "", 
+    address: "Not Provided",
+    profileImage: user?.photoURL || ""
+  });
 
   // Modal States
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -24,8 +29,9 @@ export default function Profile() {
   const [editForm, setEditForm] = useState({ name: "", phone: "", address: "" });
   const [passForm, setPassForm] = useState({ newPassword: "" });
 
-  const firstName = user?.displayName ? user.displayName.split(" ")[0] : (user?.email?.split("@")[0] || "User");
-  const avatarUrl = user?.photoURL || `https://ui-avatars.com/api/?name=${firstName}&background=0D8ABC&color=fff&size=256&bold=true`;
+  // ✅ Profile photo aur name ab database state (profileData) se aayenge
+  const firstName = profileData.name ? profileData.name.split(" ")[0] : (user?.email?.split("@")[0] || "User");
+  const avatarUrl = profileData.profileImage || `https://ui-avatars.com/api/?name=${firstName}&background=0D8ABC&color=fff&size=256&bold=true`;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,14 +48,25 @@ export default function Profile() {
         
         setStats({ total, signed, pending });
 
-        // 2. Fetch User's Extra Info (Phone, Address)
+        // 2. Fetch User's Extra Info from Firestore (Gem App saves data here)
         const userDocRef = doc(db, "users", user.uid);
         const userSnap = await getDoc(userDocRef);
         
         if (userSnap.exists()) {
           const data = userSnap.data();
-          setProfileData({ phone: data.phone || "", address: data.address || "Not Provided" });
-          setEditForm({ name: user.displayName || "", phone: data.phone || "", address: data.address || "" });
+          
+          // ✅ Get details from Firestore first
+          const fetchedName = data.name || user.displayName || "";
+          const fetchedImage = data.profileImage || user.photoURL || "";
+
+          setProfileData({ 
+            name: fetchedName,
+            phone: data.phone || "", 
+            address: data.address || "Not Provided",
+            profileImage: fetchedImage
+          });
+
+          setEditForm({ name: fetchedName, phone: data.phone || "", address: data.address || "" });
         } else {
           setEditForm({ name: user.displayName || "", phone: "", address: "" });
         }
@@ -72,14 +89,20 @@ export default function Profile() {
         await updateProfile(user, { displayName: editForm.name });
       }
 
-      // Save Phone & Address in Database
+      // ✅ Save Name, Phone & Address in Database (Taaki Gem app bhi isko read kar sake)
       await setDoc(doc(db, "users", user.uid), {
+        name: editForm.name,
         phone: editForm.phone,
         address: editForm.address,
         updatedAt: new Date().toISOString()
       }, { merge: true });
 
-      setProfileData({ phone: editForm.phone, address: editForm.address });
+      setProfileData(prev => ({ 
+        ...prev, 
+        name: editForm.name, 
+        phone: editForm.phone, 
+        address: editForm.address 
+      }));
       setIsEditModalOpen(false);
       alert("Profile Details Updated Successfully!");
     } catch (error) {
@@ -129,13 +152,15 @@ export default function Profile() {
           {/* --- Left Column: User Identity Card --- */}
           <div className="profile-identity-card">
             <div className="avatar-wrapper">
+              {/* ✅ Ab avatar image database se aayegi */}
               <img src={avatarUrl} alt="Owner Avatar" className="profile-avatar-large" />
               <button className="edit-avatar-btn" title="Edit Avatar">
                 <Edit3 size={16} />
               </button>
             </div>
             
-            <h2 className="profile-name">{user.displayName || "Property Owner"}</h2>
+            {/* ✅ Naam bhi database se aayega */}
+            <h2 className="profile-name">{profileData.name || "Property Owner"}</h2>
             <p className="profile-role">Verified Owner <ShieldCheck size={16} className="verified-icon" /></p>
             
             <div className="profile-contact-info">

@@ -20,20 +20,31 @@ import {
 import "./Dashboard.css";
 
 export default function Dashboard() {
-  const { user, logout } = useAuth();
+  // ✅ Yahan humne isPremium aur loading nikal liya hai
+  const { user, logout, isPremium, loading } = useAuth();
   const navigate = useNavigate(); 
   const [activeTab, setActiveTab] = useState("overview");
   const [agreements, setAgreements] = useState([]);
   
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  // ✅ PREMIUM LOCK LOGIC (Naya Code)
+  useEffect(() => {
+    // Jab loading khatam ho jaye aur user login ho, par premium NAHI ho
+    if (!loading && user && !isPremium) {
+      alert("🔒 Premium Access Required! Redirecting to SafeStay Premium...");
+      // Wapas Gem App ke premium page par bhej do
+      window.location.href = "http://localhost:5173/premium"; 
+    }
+  }, [user, isPremium, loading]);
+
   // Form State with Aadhaar and Signature fields
   const [formData, setFormData] = useState({
     propertyName: "",
     rentAmount: "",
     maxTenants: 1, 
-    ownerAadhaar: "", // 🔥 New field
-    ownerSignature: "", // 🔥 New field (Base64)
+    ownerAadhaar: "", 
+    ownerSignature: "", 
     terms: "1. Rent must be paid by the 5th of every month.\n2. Security deposit is refundable.\n3. Keep the premises clean.", 
   });
 
@@ -50,7 +61,6 @@ export default function Dashboard() {
     return () => unsubscribe();
   }, [user]);
 
-  // Handle Signature image upload and conversion to Base64
   const handleSignatureChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -64,7 +74,6 @@ export default function Dashboard() {
 
   const handleCreateAgreement = async (e) => {
     e.preventDefault();
-    // Validating all required fields including Aadhaar and Signature
     if (!formData.propertyName || !formData.rentAmount || !formData.ownerAadhaar || !formData.ownerSignature) {
       return alert("Please fill all details, including Aadhaar and Signature.");
     }
@@ -120,6 +129,20 @@ export default function Dashboard() {
     setActiveTab(tab);
     setIsSidebarOpen(false);
   };
+
+  // ✅ PREVENT FLICKERING: Jab tak check ho raha hai, tab tak "Loading" dikhao
+  if (loading) {
+    return (
+      <div style={{ height: "100vh", display: "flex", justifyContent: "center", alignItems: "center", fontSize: "1.2rem", fontWeight: "bold", color: "#333" }}>
+        Checking Premium Access... 🔒
+      </div>
+    );
+  }
+
+  // ✅ PREVENT ACCESS: Agar user premium nahi hai, toh page ka baaki content render hi mat karo
+  if (!isPremium) {
+    return null;
+  }
 
   return (
     <div className="dashboard-wrapper">
